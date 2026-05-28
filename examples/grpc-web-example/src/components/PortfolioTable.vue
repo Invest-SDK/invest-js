@@ -20,8 +20,6 @@ const columns = [
   },
 ];
 
-//const {positions} = storeToRefs(store)
-
 const getSelectedString = () => {
   return selected.value.length === 0
     ? ''

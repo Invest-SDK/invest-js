@@ -11,6 +11,7 @@ export type APIService = Pick<
   | 'ordersStream'
   | 'stopOrders'
   | 'users'
+  | 'sandbox'
 >;
 
 export abstract class BaseCommand<T, S> {

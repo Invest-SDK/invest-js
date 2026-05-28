@@ -35,8 +35,9 @@
       }
     },
     "test": {
+      "executor": "nx:run-commands",
       "options": {
-        "passWithNoTests": true
+        "command": "node --import tsx --test examples/nest-sdk/src/backtest/live/*.test.ts"
       }
     }
   }

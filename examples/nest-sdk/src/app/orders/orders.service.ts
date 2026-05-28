@@ -4,9 +4,10 @@ import {
   CreateOrderCommand,
   GetActiveOrdersStreamCommand,
   GetSuccessOrdersStreamCommand,
-  InvestNodeSDK,
-} from '@t-tech/invest-sdk-node';
+} from '@ttech-pub/invest-sdk-node';
+import type { InvestNodeSDK } from '@ttech-pub/invest-sdk-node';
 import { OrderDirection, OrderType, PriceType, TimeInForceType } from '@ttech-pub/grpc-node-client';
+import type { PostOrderResponse } from '@ttech-pub/grpc-node-client';
 import { randomUUID } from 'node:crypto';
 import { Decimal } from '@ttech-pub/invest-core';
 import { map, mergeAll, Observable } from 'rxjs';
@@ -14,10 +15,14 @@ import { map, mergeAll, Observable } from 'rxjs';
 export class OrdersService {
   constructor(
     @Inject(INVEST_SDK_CLIENT)
-    private readonly investSdk: InvestNodeSDK
+    private readonly _investSdk: InvestNodeSDK
   ) {}
 
-  buyInstrument(accountId: string, instrumentId: string, quantity: number) {
+  buyInstrument(
+    accountId: string,
+    instrumentId: string,
+    quantity: number
+  ): Promise<PostOrderResponse> {
     const command = new CreateOrderCommand({
       accountId,
       priceType: PriceType.PRICE_TYPE_CURRENCY,
@@ -28,9 +33,9 @@ export class OrdersService {
       quantity,
       price: new Decimal('1'),
       timeInForce: TimeInForceType.TIME_IN_FORCE_DAY,
-      confirmMarginTrade: false
+      confirmMarginTrade: false,
     });
-    return this.investSdk.send(command);
+    return this._investSdk.send(command);
   }
 
   async getActiveOrdersStream(accountId: string): Promise<Observable<string>> {
@@ -38,7 +43,7 @@ export class OrdersService {
       accounts: [accountId],
     });
 
-    const iterableStream = this.investSdk.send(command);
+    const iterableStream = this._investSdk.send(command);
 
     const combinedStream = iterableStream.pipe(
       mergeAll(),
@@ -55,7 +60,7 @@ export class OrdersService {
       accounts: [accountId],
     });
 
-    return this.investSdk.send(command).pipe(
+    return this._investSdk.send(command).pipe(
       map((value) => {
         return value.orderState?.orderId || 'not found';
       })

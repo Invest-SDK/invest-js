@@ -1,0 +1,16 @@
+{
+  "name": "@ttech-pub/invest-engine-node",
+  "version": "0.0.0-stub",
+  "description": "T-Tech Invest strategy and backtesting engine for Node.js",
+  "keywords": ["trading", "investment", "strategy", "backtesting", "node", "node.js"],
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "dependencies": {
+    "@ttech-pub/invest-core": "0.0.0-stub"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

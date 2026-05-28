@@ -10,12 +10,16 @@ export class MarketDataStreamMapper {
   public static map(value: MarketDataResponse): MarketdataStreamItem {
     const { candle, lastPrice, orderbook, trade, ...otherMarketdataStreamItem } = value;
 
+    // ВНИМАНИЕ: метод используется как `pipe(map(MarketDataStreamMapper.map))`
+    // в `get-marketdata-stream.command.ts` — rxjs `map(fn)` вызывает `fn(value)`
+    // без bind, поэтому `this` внутри будет undefined. Обращаемся к статикам
+    // через имя класса, чтобы не зависеть от `this`.
     return {
       ...otherMarketdataStreamItem,
       lastPrice: lastPrice ? LastPricesMapper.map(lastPrice) : undefined,
-      orderbook: orderbook ? this.mapOrderBookStream(orderbook) : undefined,
+      orderbook: orderbook ? MarketDataStreamMapper.mapOrderBookStream(orderbook) : undefined,
       trade: trade ? TradesMapper.map(trade) : undefined,
-      candle: candle ? this.mapCandle(candle) : undefined,
+      candle: candle ? MarketDataStreamMapper.mapCandle(candle) : undefined,
     };
   }
 

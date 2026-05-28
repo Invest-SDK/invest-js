@@ -61,6 +61,7 @@
           "libs/grpc-web-client",
           "libs/rest-client",
           "libs/core",
+          "libs/engine-node",
           "libs/sdk-node",
           "libs/sdk-web"
         ],

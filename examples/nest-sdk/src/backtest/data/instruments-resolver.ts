@@ -6,12 +6,8 @@
  * и фильтровать по полю `ticker`. Результат кэшируем на время процесса.
  */
 
-import { InvestNodeSDK } from '@t-tech/invest-sdk-node';
-import {
-  GetSharesCommand,
-  GetETFsCommand,
-  GetFuturesCommand,
-} from '@t-tech/invest-sdk-node';
+import { GetSharesCommand, GetETFsCommand, GetFuturesCommand } from '@ttech-pub/invest-sdk-node';
+import type { InvestNodeSDK } from '@ttech-pub/invest-sdk-node';
 import { InstrumentStatus } from '@ttech-pub/grpc-node-client';
 import type { InstrumentClass } from '../config/pairs.config';
 
@@ -36,7 +32,6 @@ interface InstrumentRow {
 
 export class InstrumentsResolver {
   private readonly _cache: Map<InstrumentClass, Map<string, ResolvedInstrument>> = new Map();
-  // Promise-кеш чтобы не дёргать API несколько раз для одного класса.
   private readonly _inflight: Map<InstrumentClass, Promise<void>> = new Map();
 
   constructor(private readonly _sdk: InvestNodeSDK) {}
@@ -73,12 +68,12 @@ export class InstrumentsResolver {
     switch (cls) {
       case 'share': {
         const res = await this._sdk.send(new GetSharesCommand(req));
-        rows = res.instruments.map((i) => ({ ticker: i.ticker, figi: i.figi, uid: i.uid }));
+        rows = res.instruments.map(toInstrumentRow);
         break;
       }
       case 'etf': {
         const res = await this._sdk.send(new GetETFsCommand(req));
-        rows = res.instruments.map((i) => ({ ticker: i.ticker, figi: i.figi, uid: i.uid }));
+        rows = res.instruments.map(toInstrumentRow);
         break;
       }
       case 'future': {
@@ -107,6 +102,16 @@ export class InstrumentsResolver {
     }
     this._cache.set(cls, map);
   }
+}
+
+function toInstrumentRow(
+  instrument: Pick<InstrumentRow, 'ticker' | 'figi' | 'uid'>
+): InstrumentRow {
+  return {
+    ticker: instrument.ticker,
+    figi: instrument.figi,
+    uid: instrument.uid,
+  };
 }
 
 /** True, если фьючерс уже истёк к указанной дате. */

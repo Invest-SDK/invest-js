@@ -1,3 +1,3 @@
-import investSdkConfig from "./invest-sdk.config";
+import investSdkConfig from './invest-sdk.config';
 
-export const CONFIGS = [investSdkConfig]
+export const CONFIGS = [investSdkConfig];

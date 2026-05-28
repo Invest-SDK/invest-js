@@ -9,7 +9,7 @@
  */
 
 import { Decimal } from '@ttech-pub/invest-core';
-import { AbstractIndicator, BarSeries } from '@t-tech/engine-node';
+import { AbstractIndicator, BarSeries } from '@ttech-pub/invest-engine-node';
 import { SPREAD_OFFSET } from './build-spread-series';
 
 export class LogRatioIndicator extends AbstractIndicator<Decimal> {

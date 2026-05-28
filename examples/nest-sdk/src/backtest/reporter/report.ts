@@ -17,7 +17,7 @@
  */
 
 import { Decimal } from '@ttech-pub/invest-core';
-import { BarSeries, Position, TradingRecord } from '@t-tech/engine-node';
+import { BarSeries, Position, TradingRecord } from '@ttech-pub/invest-engine-node';
 import type { PairSide } from '../strategy/pairs-strategy';
 import { SPREAD_OFFSET } from '../strategy/build-spread-series';
 
@@ -84,8 +84,6 @@ function computeMetrics(result: PairBacktestResult): ComputedMetrics {
   const netLog = perTradeLog.reduce((a, b) => a + b, 0);
   const netPercent = logToPercent(netLog);
 
-  // Sharpe считаем в процентах, risk-free = 0.
-  // Для одной/двух сделок дисперсия не определена — возвращаем 0.
   let sharpe = 0;
   if (perTradePct.length >= 2) {
     const mean = perTradePct.reduce((a, b) => a + b, 0) / perTradePct.length;
@@ -102,8 +100,6 @@ function computeMetrics(result: PairBacktestResult): ComputedMetrics {
   }
   const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? Infinity : null;
 
-  // Max drawdown по equity-кривой в lnRatio пространстве; конвертация в %
-  // через (1 - exp(-dd)).
   let equity = 0;
   let peak = 0;
   let maxDD = 0;
@@ -118,8 +114,6 @@ function computeMetrics(result: PairBacktestResult): ComputedMetrics {
   const winRate =
     perTradeLog.length === 0 ? 0 : perTradeLog.filter((x) => x > 0).length / perTradeLog.length;
 
-  // Buy-and-hold на самой синтетической lnRatio-серии:
-  // logReturn = lastLn - firstLn → процент через exp().
   const series = result.series;
   const firstLn = lnRatioAt(series, series.beginIndex);
   const lastLn = lnRatioAt(series, series.endIndex);
@@ -173,7 +167,6 @@ export function formatPairReport(result: PairBacktestResult): string[] {
   lines.push(`  MaxDrawdown:       ${formatNumber(m.maxDrawdownPercent, 3)}%`);
   lines.push(`  BuyAndHold ratio:  ${formatNumber(m.buyAndHoldPercent, 3)}%`);
 
-  // Top-5 трейдов по абсолютному размеру.
   const closed = result.record.getClosedPositions();
   const roundTrip = 2 * asNumber(result.transactionCostFraction);
   const top = [...closed]

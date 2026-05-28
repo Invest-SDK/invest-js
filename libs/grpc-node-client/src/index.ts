@@ -20,6 +20,7 @@ import {
 } from '../compiled/marketdata';
 import { StopOrdersServiceClient, StopOrdersServiceDefinition } from '../compiled/stoporders';
 import { UsersServiceClient, UsersServiceDefinition } from '../compiled/users';
+import { SandboxServiceClient, SandboxServiceDefinition } from '../compiled/sandbox';
 
 export interface TTechAPIClientOptions {
   token: string;
@@ -37,6 +38,7 @@ export class NodeApiClient {
   marketdataStream: MarketDataStreamServiceClient;
   stopOrders: StopOrdersServiceClient;
   users: UsersServiceClient;
+  sandbox: SandboxServiceClient;
 
   constructor(config: TTechAPIClientOptions) {
     const token = config.token;
@@ -62,6 +64,7 @@ export class NodeApiClient {
     this.marketdataStream = clientFactory.create(MarketDataStreamServiceDefinition, channel);
     this.stopOrders = clientFactory.create(StopOrdersServiceDefinition, channel);
     this.users = clientFactory.create(UsersServiceDefinition, channel);
+    this.sandbox = clientFactory.create(SandboxServiceDefinition, channel);
   }
 }
 
@@ -108,7 +111,18 @@ export type {
   PositionsResponse,
   OperationsRequest,
   OperationsResponse,
+  PortfolioRequest,
+  PortfolioResponse,
 } from '../compiled/operations';
+
+export type {
+  OpenSandboxAccountRequest,
+  OpenSandboxAccountResponse,
+  CloseSandboxAccountRequest,
+  CloseSandboxAccountResponse,
+  SandboxPayInRequest,
+  SandboxPayInResponse,
+} from '../compiled/sandbox';
 
 export type {
   InstrumentsRequest,
@@ -148,6 +162,7 @@ export {
   GetTechAnalysisRequest_TypeOfPrice,
   GetTechAnalysisRequest_IndicatorType,
   GetTechAnalysisRequest_IndicatorInterval,
+  GetTechAnalysisRequest_Smoothing,
   TradeDirection,
   CandleSource,
   CandleSubscription,
@@ -156,6 +171,7 @@ export {
   TradeSourceType,
   SubscriptionStatus,
   SubscriptionAction,
+  SubscriptionInterval,
 } from '../compiled/marketdata';
 
 export type {
@@ -174,7 +190,6 @@ export type {
   GetTechAnalysisRequest,
   GetTechAnalysisResponse,
   GetTechAnalysisRequest_Deviation,
-  GetTechAnalysisRequest_Smoothing,
   GetTradingStatusesRequest,
   GetTradingStatusesResponse,
   GetLastPricesRequest,

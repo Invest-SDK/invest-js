@@ -4,30 +4,37 @@ import {
   GetAccountsCommand,
   GetOperationsCommand,
   GetPositionsCommand,
-  InvestNodeSDK,
   OperationState,
-} from '@t-tech/invest-sdk-node';
+} from '@ttech-pub/invest-sdk-node';
+import type {
+  GetAccountsResponse,
+  OperationsResponse,
+  PositionsResponse,
+} from '@ttech-pub/grpc-node-client';
+import type { InvestNodeSDK } from '@ttech-pub/invest-sdk-node';
 import { startOfDay } from 'date-fns';
 
 export class PortfolioService {
   constructor(
     @Inject(INVEST_SDK_CLIENT)
-    private readonly investSdk: InvestNodeSDK
+    private readonly _investSdk: InvestNodeSDK
   ) {}
 
-  getAccounts() {
+  getAccounts(): Promise<GetAccountsResponse> {
     const command = new GetAccountsCommand({});
 
-    return this.investSdk.send(command);
+    return this._investSdk.send(command);
   }
 
-  getPositionsByAccount(accountId: string) {
+  getPositionsByAccount(accountId: string): Promise<PositionsResponse> {
     const command = new GetPositionsCommand({ accountId });
-    return this.investSdk.send(command);
+    return this._investSdk.send(command);
   }
 
-  // TODO: Использовать instrumentId
-  getTodayExecutedOperationsByAccountAndFigi(accountId: string, figi: string) {
+  getTodayExecutedOperationsByAccountAndFigi(
+    accountId: string,
+    figi: string
+  ): Promise<OperationsResponse> {
     const command = new GetOperationsCommand({
       accountId,
       figi,
@@ -36,6 +43,6 @@ export class PortfolioService {
       state: OperationState.OPERATION_STATE_EXECUTED,
     });
 
-    return this.investSdk.send(command);
+    return this._investSdk.send(command);
   }
 }

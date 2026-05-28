@@ -13,7 +13,7 @@ import {
   StandardDeviationIndicator,
   isNaNValue,
   NaNValue,
-} from '@t-tech/engine-node';
+} from '@ttech-pub/invest-engine-node';
 
 export class ZScoreIndicator extends AbstractIndicator<Decimal> {
   private readonly _source: Indicator<Decimal>;

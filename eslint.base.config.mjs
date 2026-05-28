@@ -15,7 +15,18 @@ export default [
         'error',
         {
           enforceBuildableLibDependency: true,
-          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?js$'],
+          allow: [
+            '^.*/eslint(\\.base)?\\.config\\.[cm]?js$',
+            '^@t-tech/invest-sdk-node$',
+            '^@ttech-pub/invest-sdk-node$',
+            '^@ttech-pub/grpc-node-client$',
+            '^@ttech-pub/invest-core$',
+            '^@ttech-pub/invest-engine-node$',
+            '^@ttech-pub/grpc-web-client$',
+            '^@ttech-pub/grpc$',
+            '^@ttech-pub/invest-rest-client$',
+            '^@ttech-pub/invest-sdk-web$'
+          ],
           depConstraints: [
             {
               sourceTag: '*',

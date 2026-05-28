@@ -24,7 +24,7 @@ export const BACKTEST_CONFIG = {
   minClosedPositionsForReport: 1,
 
   /** Транзакционные издержки на одну сторону сделки (доля от notional). */
-  transactionCostFraction: new Decimal('0.0005'), // 5 bps
+  transactionCostFraction: new Decimal('0.0005'),
 
   /** Начальный «капитал» для %-сайзера и кривой equity (в условных единицах). */
   initialEquity: new Decimal('100000'),

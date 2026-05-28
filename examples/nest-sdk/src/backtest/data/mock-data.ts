@@ -30,7 +30,6 @@ export function generateMockPair(params: MockPairParams): {
 } {
   let seed = params.seed;
   const rand = (): number => {
-    // LCG — детерминированный псевдо-шум, без зависимости от Math.random.
     seed = (seed * 9301 + 49297) % 233280;
     return seed / 233280;
   };
@@ -42,7 +41,6 @@ export function generateMockPair(params: MockPairParams): {
   const a: CandleSample[] = [];
   const b: CandleSample[] = [];
   for (let i = 0; i < params.barCount; i++) {
-    // Общий тренд + индивидуальный шум — отношение mean-reverting.
     const common = Math.sin(i / 25) * 0.3;
     pA = Math.max(1, pA + common + (rand() - 0.5) * 0.8);
     pB = Math.max(1, pB + common * (params.basePriceB / params.basePriceA) + (rand() - 0.5) * 0.4);

@@ -3,7 +3,7 @@
   "private": true,
   "workspaces": ["libs/*"],
   "scripts": {
-    "build:all": "nx run-many --verbose --target=build --projects=grpc-node-client,grpc-web-client,core,sdk-node,sdk-web,rest-client",
+    "build:all": "nx run-many --verbose --target=build --projects=grpc-node-client,grpc-web-client,core,engine-node,sdk-node,sdk-web,rest-client",
     "publish": "nx release publish",
     "update-versions": "node .github/scripts/update-versions.js"
   },

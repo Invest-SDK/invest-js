@@ -1,6 +1,16 @@
-Запуск через  - `npx tsx examples/nest-sdk/src/backtest/pairs-arbitrage.ts `
+# Backtest scripts
+
+Полный гайд по запуску NestJS, backtest и live-бота находится в
+[`examples/nest-sdk/README.md`](../../README.md).
+
+Быстрый запуск mock-backtest из корня репозитория:
+
+```bash
+npx tsx examples/nest-sdk/src/backtest/pairs-arbitrage.ts --mock
+```
 
 Пример вывода:
+
 ```
 # Pairs arbitrage backtest
 # Mode: SANDBOX

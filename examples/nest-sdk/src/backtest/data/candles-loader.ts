@@ -7,8 +7,8 @@
  */
 
 import { Decimal } from '@ttech-pub/invest-core';
-import { InvestNodeSDK } from '@t-tech/invest-sdk-node';
-import { GetCandlesCommand } from '@t-tech/invest-sdk-node';
+import { GetCandlesCommand } from '@ttech-pub/invest-sdk-node';
+import type { InvestNodeSDK } from '@ttech-pub/invest-sdk-node';
 import { CandleInterval } from '@ttech-pub/grpc-node-client';
 
 export interface CandleSample {
@@ -48,7 +48,6 @@ export class CandlesLoader {
         })
       );
       for (const c of res.candles) {
-        // Свечи с isComplete=false — текущий незакрытый бар, для бэктеста не нужен.
         if (!c.isComplete) continue;
         if (!c.open || !c.high || !c.low || !c.close || !c.time) continue;
         out.push({
@@ -63,7 +62,6 @@ export class CandlesLoader {
       cursor = batchEnd;
     }
 
-    // SDK иногда возвращает свечи с дубликатами на границах недель — дедупим по времени.
     return dedupeByTime(out);
   }
 }
