@@ -1,0 +1,21 @@
+{
+  "name": "@ttech-pub/invest-core",
+  "version": "0.0.0-stub",
+  "description": "T-Tech Invest Core package with domain logic",
+  "keywords": ["trading", "investment", "core"],
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "dependencies": {
+    "@swc/helpers": "~0.5.11",
+    "big.js": "7.0.1"
+  },
+  "devDependencies": {
+    "@types/big.js": "6.2.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

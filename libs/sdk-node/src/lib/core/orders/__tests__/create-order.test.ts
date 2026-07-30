@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 import { APIService } from '../../shared';
 import { OrderDirection, OrderType, PriceType, TimeInForceType } from '@ttech-pub/grpc-node-client';
 import { CreateOrderCommand, CreateOrderInput } from '../commands';

@@ -56,9 +56,16 @@
   "release": {
     "groups": {
       "contract": {
-        "projects": ["libs/grpc", "libs/grpc-node-client", "libs/grpc-web-client"],
+        "projects": [
+          "libs/grpc-node-client",
+          "libs/grpc-web-client",
+          "libs/rest-client",
+          "libs/core",
+          "libs/sdk-node",
+          "libs/sdk-web"
+        ],
         "projectsRelationship": "fixed",
-        "releaseTagPattern": "v{version}/contract"
+        "releaseTagPattern": "{version}"
       }
     },
     "changelog": {

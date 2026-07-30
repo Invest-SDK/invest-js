@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "composite": true,
+    "declarationMap": true,
+    "module": "ESNext",
+    "allowJs": true,
+    "types": ["node"]
+  },
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.bench.ts",
+    "**/__tests__/**",
+    "**/__integration__/**",
+    "**/__fixtures__/**"
+  ]
+}

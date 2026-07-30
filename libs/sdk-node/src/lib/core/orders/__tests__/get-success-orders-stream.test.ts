@@ -1,7 +1,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import { firstValueFrom, take, toArray } from 'rxjs';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 import { Money } from '../../shared/money';
 import { APIService } from '../../shared';
 import {

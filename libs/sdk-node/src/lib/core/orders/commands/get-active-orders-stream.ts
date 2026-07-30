@@ -19,8 +19,8 @@ export class GetActiveOrdersStreamCommand extends BaseCommand<
       filter((item) => !!item.orderState),
       map((value) => OrderStateStreamMapper.map(value)),
       // TODO: придумать как можно избавиться от !, так как выше есть фильтр
-      // @ts-expect-error Выше есть фильтр
-      groupBy((item) => item.orderState.orderId)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      groupBy((item) => item.orderState!.orderId)
     );
   }
 }

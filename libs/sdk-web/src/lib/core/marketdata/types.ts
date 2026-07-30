@@ -1,4 +1,4 @@
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 import {
   Candle,
   InstrumentClosePriceResponse,

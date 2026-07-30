@@ -1,23 +1,20 @@
 {
-  "name": "@t-tech/invest-rest-client",
-  "version": "0.0.1",
-  "private": true,
+  "name": "@ttech-pub/invest-rest-client",
+  "version": "0.0.0-stub",
+  "description": "T-Tech Invest Client for REST API (HTTP JSON)",
+  "keywords": ["trading", "investment", "rest", "http", "json"],
+  "license": "MIT",
   "type": "commonjs",
   "main": "./src/index.js",
+  "module": "./src/index.js",
   "types": "./src/index.d.ts",
-  "scripts": {
-    "test": "node --test --import=tsx ./**/*.test.ts",
-    "generate-client": "ts-node --project tsconfig.scripts.json ./scripts/generate-client.ts"
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
-    "@swc/helpers": "~0.5.11",
-    "@t-tech/invest-shared": "0.0.1"
+    "@swc/helpers": "~0.5.11"
   },
-  "devDependencies": {
-    "yaml": "^2.8.0",
-    "platformatic": "^2.70.1",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
-    "@types/node": "^24.0.4"
+  "peerDependencies": {
+    "@ttech-pub/invest-core": "0.0.0-stub"
   }
 }

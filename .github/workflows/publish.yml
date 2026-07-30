@@ -1,13 +1,13 @@
-name: Publish Contract
+name: Publish
 
 on:
   push:
     tags:
-      - v*.*.*/contract
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   publish:
-    name: Publish Contract
+    name: Publish
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,12 +33,16 @@ jobs:
         run: npm install
         shell: bash
 
+      - name: Update stub versions
+        run: node .github/scripts/update-versions.js
+        shell: bash
+
       - name: Build packages
-        run: npx nx run-many --target=build --projects=grpc,grpc-node-client,grpc-web-client
+        run: npm run build:all
         shell: bash
 
       - name: Publish packages
-        run: npx nx release publish
+        run: npm run publish
         shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}

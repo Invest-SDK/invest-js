@@ -1,7 +1,7 @@
 import { OrderStateStreamResponse } from '@ttech-pub/grpc-node-client';
 import { OrderStreamItem, OrderTradeInformation } from '../types';
 import { Money } from '../../shared/money';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 
 export class OrderStateStreamMapper {
   public static map(value: OrderStateStreamResponse): OrderStreamItem {

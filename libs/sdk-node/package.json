@@ -1,14 +1,22 @@
 {
-  "name": "@t-tech/invest-sdk-node",
-  "version": "0.0.1",
-  "private": true,
+  "name": "@ttech-pub/invest-sdk-node",
+  "version": "0.0.0-stub",
+  "description": "T-Tech Invest SDK for Node.JS applications",
+  "keywords": ["trading", "investment", "sdk", "node", "node.js"],
+  "license": "MIT",
   "type": "commonjs",
   "main": "./src/index.js",
+  "module": "./src/index.js",
   "types": "./src/index.d.ts",
-  "scripts": {
-    "test": "node --test --import=tsx ./**/*.test.ts"
-  },
   "dependencies": {
-    "rxjs": "^7.8.0"
+    "@swc/helpers": "~0.5.11",
+    "rxjs": "7.8.0"
+  },
+  "peerDependencies": {
+    "@ttech-pub/grpc-node-client": "0.0.0-stub",
+    "@ttech-pub/invest-core": "0.0.0-stub"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

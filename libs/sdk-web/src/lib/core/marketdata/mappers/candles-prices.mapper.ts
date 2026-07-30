@@ -1,5 +1,5 @@
 import { Candle } from '@ttech-pub/grpc-web-client';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 import { MarketdataCandlePrices, MarketdataCandlePricesNames } from '../types';
 
 export class CandlesMapper {

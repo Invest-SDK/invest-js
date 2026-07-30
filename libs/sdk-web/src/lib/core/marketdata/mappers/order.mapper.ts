@@ -1,5 +1,5 @@
 import { Order } from '@ttech-pub/grpc-web-client';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 import { MarketdataOrder } from '../types';
 
 export class OrdersMapper {

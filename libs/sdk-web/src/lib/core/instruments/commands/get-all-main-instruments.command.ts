@@ -13,7 +13,7 @@ import { GetBondsCommand } from './get-bonds.command';
 import { GetETFsCommand } from './get-etfs.command';
 import { GetFuturesCommand } from './get-futures.command';
 import { GetOptionsCommand } from './get-options.command';
-import { ClassConstructor } from '@t-tech/invest-shared';
+import { ClassConstructor } from '@ttech-pub/invest-core';
 
 type AvailableInstrumentTypes =
   | InstrumentType.INSTRUMENT_TYPE_BOND

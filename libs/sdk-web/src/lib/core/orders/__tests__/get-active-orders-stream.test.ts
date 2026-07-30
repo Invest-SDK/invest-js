@@ -1,7 +1,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import { firstValueFrom, take, toArray, mergeMap } from 'rxjs';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 import { Money } from '../../shared/money';
 import { APIService } from '../../shared';
 import { OrderStateStreamRequest, OrderStateStreamResponse } from '@ttech-pub/grpc-web-client';

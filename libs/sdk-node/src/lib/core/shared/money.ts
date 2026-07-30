@@ -1,4 +1,4 @@
-import { BaseError, Decimal } from '@t-tech/invest-shared';
+import { BaseError, Decimal } from '@ttech-pub/invest-core';
 import { MoneyValue } from '@ttech-pub/grpc-node-client';
 
 export class UnknownMoneyError extends BaseError {

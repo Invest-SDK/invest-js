@@ -11,3 +11,16 @@ example/.env
 .history*
 
 tmp/*
+
+
+copy.bara.sky
+
+/.mcp.json
+/.claude/*
+/cache_version.json
+/config.json
+/plugins/*
+/logs/*
+/.supergoal
+/.codegraph
+/.nessy

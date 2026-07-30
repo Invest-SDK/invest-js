@@ -1,7 +1,7 @@
 import { GetOrderBookRequest, GetOrderBookResponse } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 import { MarketdataOrder } from '../types';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 import { OrdersMapper } from '../mappers';
 
 export interface GetOrderBookInput extends GetOrderBookRequest {}

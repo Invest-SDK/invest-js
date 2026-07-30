@@ -1,5 +1,5 @@
 import { InstrumentClosePriceResponse } from '@ttech-pub/grpc-node-client';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 import { MarketdataClosePrice } from '../types';
 
 export class ClosePricesMapper {

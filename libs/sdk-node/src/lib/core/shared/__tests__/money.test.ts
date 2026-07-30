@@ -1,6 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 import { MoneyValue } from '@ttech-pub/grpc-node-client';
 import { Money, UnknownMoneyError } from '../money';
 

@@ -1,7 +1,7 @@
 import { GetTechAnalysisRequest } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 import { TechAnalysisDeviation, TechAnalysisIndicator } from '../types';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 
 export interface GetTechAnalysisIndicatorsInput extends Omit<GetTechAnalysisRequest, 'deviation'> {
   deviation?: TechAnalysisDeviation;

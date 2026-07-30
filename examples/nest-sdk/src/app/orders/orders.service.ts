@@ -6,9 +6,9 @@ import {
   GetSuccessOrdersStreamCommand,
   InvestNodeSDK,
 } from '@t-tech/invest-sdk-node';
-import { OrderDirection, OrderType, PriceType, TimeInForceType } from '@tinkoff/grpc-node-client';
+import { OrderDirection, OrderType, PriceType, TimeInForceType } from '@ttech-pub/grpc-node-client';
 import { randomUUID } from 'node:crypto';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 import { map, mergeAll, Observable } from 'rxjs';
 
 export class OrdersService {

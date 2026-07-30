@@ -1,4 +1,4 @@
-import { BaseError } from '@t-tech/invest-shared';
+import { BaseError } from '@ttech-pub/invest-core';
 
 export class EmptyURLError extends BaseError {
   override code = 'EmptyURL';

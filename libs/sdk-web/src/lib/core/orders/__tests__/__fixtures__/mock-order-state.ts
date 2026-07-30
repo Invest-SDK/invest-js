@@ -1,7 +1,7 @@
 import {
   OrderExecutionReportStatus,
   OrderStateStreamResponse_OrderState,
-} from '@ttech-pub/grpc-node-client';
+} from '@ttech-pub/grpc-web-client';
 
 export function createMockOrderState(
   params: Partial<OrderStateStreamResponse_OrderState> = {}

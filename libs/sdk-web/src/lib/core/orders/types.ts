@@ -6,7 +6,7 @@ import {
   OrderTrade,
 } from '@ttech-pub/grpc-web-client';
 import { Money } from '../shared/money';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 
 export type OrderInformation = Omit<
   OrderState,

@@ -1,6 +1,6 @@
 import { PostOrderAsyncRequest, PostOrderAsyncResponse } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 
 export interface CreateAsyncOrderInput extends Omit<PostOrderAsyncRequest, 'price'> {
   price?: Decimal;

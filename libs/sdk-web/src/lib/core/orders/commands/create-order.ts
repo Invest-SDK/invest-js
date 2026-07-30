@@ -1,6 +1,6 @@
 import { PostOrderRequest, PostOrderResponse } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 
 export interface CreateOrderInput extends Omit<PostOrderRequest, 'price'> {
   price?: Decimal;

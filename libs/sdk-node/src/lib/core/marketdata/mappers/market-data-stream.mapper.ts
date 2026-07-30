@@ -1,5 +1,5 @@
 import { Candle, MarketDataResponse, OrderBook } from '@ttech-pub/grpc-node-client';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 import { MarketdataCandle, MarketdataOrderBookStream, MarketdataStreamItem } from '../types';
 import { OrdersMapper } from './order.mapper';
 import { CandlesMapper } from './candles-prices.mapper';

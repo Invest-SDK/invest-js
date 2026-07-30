@@ -1,5 +1,5 @@
 import { Trade } from '@ttech-pub/grpc-web-client';
-import { Decimal } from '@t-tech/invest-shared';
+import { Decimal } from '@ttech-pub/invest-core';
 import { MarketdataTrade } from '../types';
 
 export class TradesMapper {
