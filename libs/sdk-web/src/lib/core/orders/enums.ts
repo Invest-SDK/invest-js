@@ -4,4 +4,4 @@ export {
   TimeInForceType,
   OrderExecutionReportStatus,
   ResultSubscriptionStatus,
-} from '@t-tech/invest-grpc-web';
+} from '@ttech-pub/grpc-web-client';

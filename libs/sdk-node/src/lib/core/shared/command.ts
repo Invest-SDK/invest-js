@@ -1,6 +1,17 @@
-import { NodeApiClient } from "@tinkoff/grpc-node-client";
+import { NodeApiClient } from '@ttech-pub/grpc-node-client';
 
-export type APIService = Pick<NodeApiClient, 'instruments' | 'marketdata' | 'marketdataStream' | 'operations' | 'operationsStream' | 'orders' | 'ordersStream' | 'stopOrders' | 'users'>
+export type APIService = Pick<
+  NodeApiClient,
+  | 'instruments'
+  | 'marketdata'
+  | 'marketdataStream'
+  | 'operations'
+  | 'operationsStream'
+  | 'orders'
+  | 'ordersStream'
+  | 'stopOrders'
+  | 'users'
+>;
 
 export abstract class BaseCommand<T, S> {
   #options: T;

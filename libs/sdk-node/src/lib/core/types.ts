@@ -1,2 +1,2 @@
 // common reexported types
-export { ResultSubscriptionStatus } from '@tinkoff/grpc-node-client';
+export { ResultSubscriptionStatus } from '@ttech-pub/grpc-node-client';

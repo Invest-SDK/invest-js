@@ -1,4 +1,4 @@
-import { InstrumentClosePriceResponse } from '@tinkoff/grpc-node-client';
+import { InstrumentClosePriceResponse } from '@ttech-pub/grpc-node-client';
 import { Decimal } from '@t-tech/invest-shared';
 import { MarketdataClosePrice } from '../types';
 

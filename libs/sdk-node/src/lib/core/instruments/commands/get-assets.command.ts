@@ -1,4 +1,4 @@
-import { InstrumentsRequest, AssetsResponse } from '@tinkoff/grpc-node-client';
+import { InstrumentsRequest, AssetsResponse } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetAssetsInput extends InstrumentsRequest {}

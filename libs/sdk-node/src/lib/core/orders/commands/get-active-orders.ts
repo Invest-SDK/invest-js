@@ -1,4 +1,4 @@
-import { GetOrdersRequest } from '@tinkoff/grpc-node-client';
+import { GetOrdersRequest } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 import { OrderInformation } from '../types';
 import { Money } from '../../shared/money';

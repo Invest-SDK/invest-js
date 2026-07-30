@@ -1,4 +1,4 @@
-import { GetCandlesRequest, HistoricCandle } from '@tinkoff/grpc-node-client';
+import { GetCandlesRequest, HistoricCandle } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 import { MarketdataCandlePrices, MarketdataCandlePricesNames } from '../types';
 import { CandlesMapper } from '../mappers';

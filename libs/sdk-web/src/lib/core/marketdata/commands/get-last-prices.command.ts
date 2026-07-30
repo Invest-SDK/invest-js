@@ -1,4 +1,4 @@
-import { GetLastPricesRequest } from '@t-tech/invest-grpc-web';
+import { GetLastPricesRequest } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 import { MarketdataLastPrice } from '../types';
 import { LastPricesMapper } from '../mappers';

@@ -1,4 +1,4 @@
-import { InstrumentsRequest, CurrenciesResponse } from '@tinkoff/grpc-node-client';
+import { InstrumentsRequest, CurrenciesResponse } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetCurrenciesInput extends InstrumentsRequest {}

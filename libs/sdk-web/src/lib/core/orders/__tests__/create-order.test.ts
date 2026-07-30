@@ -3,7 +3,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import { Decimal } from '@t-tech/invest-shared';
 import { APIService } from '../../shared';
-import { OrderDirection, OrderType, PriceType, TimeInForceType } from '@t-tech/invest-grpc-web';
+import { OrderDirection, OrderType, PriceType, TimeInForceType } from '@ttech-pub/grpc-web-client';
 import { CreateOrderCommand, CreateOrderInput } from '../commands';
 
 describe('CreateOrderCommand', () => {

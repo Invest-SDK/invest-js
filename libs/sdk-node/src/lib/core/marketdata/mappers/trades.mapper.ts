@@ -1,4 +1,4 @@
-import { Trade } from '@tinkoff/grpc-node-client';
+import { Trade } from '@ttech-pub/grpc-node-client';
 import { Decimal } from '@t-tech/invest-shared';
 import { MarketdataTrade } from '../types';
 

@@ -1,4 +1,4 @@
-import { LastPrice } from '@tinkoff/grpc-node-client';
+import { LastPrice } from '@ttech-pub/grpc-node-client';
 import { Decimal } from '@t-tech/invest-shared';
 import { MarketdataLastPrice } from '../types';
 

@@ -1,4 +1,4 @@
-import { IndicativesRequest, IndicativesResponse } from '@tinkoff/grpc-node-client';
+import { IndicativesRequest, IndicativesResponse } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetIndicativesInput extends IndicativesRequest {}

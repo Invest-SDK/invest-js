@@ -1,4 +1,4 @@
-import { GetOrderBookRequest, GetOrderBookResponse } from '@tinkoff/grpc-node-client';
+import { GetOrderBookRequest, GetOrderBookResponse } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 import { MarketdataOrder } from '../types';
 import { Decimal } from '@t-tech/invest-shared';

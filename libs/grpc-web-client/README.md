@@ -5,13 +5,13 @@ Provides browser modules with promise api grpc stubs
 ## Install using npm
 
 ```
-npm install @tinkoff/invest-js-grpc-web --save
+npm install @ttech-pub/grpc-web-client --save
 ```
 
 ## Usage
 
 ```
-import { TTechApiClient } from '@tinkoff/invest-js-grpc-web'
+import { TTechApiClient } from '@ttech-pub/grpc-web-client'
 
 const client = new TTechApiClient({ token: 't.invest.secret-token', metadata : {'x-app-name':'node-ts-myapp'}})
 
@@ -27,4 +27,6 @@ allInstruments()
 
 ```
 
-more examples in exmaples dir
+## Примеры
+
+Подробные примеры использования смотри в `./examples`.

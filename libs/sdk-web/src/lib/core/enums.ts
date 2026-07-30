@@ -4,4 +4,4 @@ export {
   InstrumentStatus,
   InstrumentType,
   SecurityTradingStatus,
-} from '@t-tech/invest-grpc-web';
+} from '@ttech-pub/grpc-web-client';

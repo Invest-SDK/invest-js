@@ -1,4 +1,4 @@
-import { GetDividendsRequest, GetDividendsResponse } from '@tinkoff/grpc-node-client';
+import { GetDividendsRequest, GetDividendsResponse } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetDividendsInput extends GetDividendsRequest {}

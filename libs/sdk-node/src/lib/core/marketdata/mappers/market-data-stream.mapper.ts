@@ -1,4 +1,4 @@
-import { Candle, MarketDataResponse, OrderBook } from '@tinkoff/grpc-node-client';
+import { Candle, MarketDataResponse, OrderBook } from '@ttech-pub/grpc-node-client';
 import { Decimal } from '@t-tech/invest-shared';
 import { MarketdataCandle, MarketdataOrderBookStream, MarketdataStreamItem } from '../types';
 import { OrdersMapper } from './order.mapper';

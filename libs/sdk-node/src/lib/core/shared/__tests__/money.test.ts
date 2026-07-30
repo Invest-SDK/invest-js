@@ -1,7 +1,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import { Decimal } from '@t-tech/invest-shared';
-import { MoneyValue } from '@tinkoff/grpc-node-client';
+import { MoneyValue } from '@ttech-pub/grpc-node-client';
 import { Money, UnknownMoneyError } from '../money';
 
 describe('Money', () => {

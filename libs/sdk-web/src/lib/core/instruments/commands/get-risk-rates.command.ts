@@ -1,4 +1,4 @@
-import { RiskRatesRequest, RiskRatesResponse } from '@t-tech/invest-grpc-web';
+import { RiskRatesRequest, RiskRatesResponse } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetRiskRatesInput extends RiskRatesRequest {}

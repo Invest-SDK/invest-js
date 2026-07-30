@@ -149,6 +149,149 @@ export class Decimal {
   }
 
   /**
+   * Checks if the Decimal value is zero.
+   *
+   * @returns {boolean} True if the value is zero, false otherwise.
+   */
+  public isZero(): boolean {
+    return this._value.eq(0);
+  }
+
+  /**
+   * Checks if the Decimal value is greater than the given value.
+   *
+   * @param {Decimal} inputValue - The Decimal value to compare with.
+   * @returns {boolean} True if the value is greater than the given value, false otherwise.
+   */
+  public isGreaterThan(inputValue: Decimal): boolean {
+    if (!(inputValue instanceof Decimal)) {
+      throw new InputParamsNotValidDecimalError('Input params is not Decimal');
+    }
+    const mappedInputValue = Decimal.toBig(inputValue.toString());
+    return this._value.gt(mappedInputValue);
+  }
+
+  /**
+   * Checks if the Decimal value is less than the given value.
+   *
+   * @param {Decimal} inputValue - The Decimal value to compare with.
+   * @returns {boolean} True if the value is less than the given value, false otherwise.
+   */
+  public isLessThan(inputValue: Decimal): boolean {
+    if (!(inputValue instanceof Decimal)) {
+      throw new InputParamsNotValidDecimalError('Input params is not Decimal');
+    }
+    const mappedInputValue = Decimal.toBig(inputValue.toString());
+    return this._value.lt(mappedInputValue);
+  }
+
+  /**
+   * Returns the absolute value of this Decimal instance.
+   *
+   * @returns {Decimal} A new Decimal instance representing the absolute value.
+   * @throws {UnknownDecimalError} If an error occurs during the operation.
+   */
+  public abs(): Decimal {
+    try {
+      const newValue: Big = this._value.abs();
+      return new Decimal(newValue.toString());
+    } catch (error) {
+      throw new UnknownDecimalError('Error while calculating absolute value', error);
+    }
+  }
+
+  /**
+   * Checks if the Decimal value is equal to the given value.
+   *
+   * @param {Decimal} inputValue - The Decimal value to compare with.
+   * @returns {boolean} True if the value is equal to the given value, false otherwise.
+   * @throws {InputParamsNotValidDecimalError} If the input is not a valid Decimal instance.
+   */
+  public isEqualTo(inputValue: Decimal): boolean {
+    if (!(inputValue instanceof Decimal)) {
+      throw new InputParamsNotValidDecimalError('Input params is not Decimal');
+    }
+    const mappedInputValue = Decimal.toBig(inputValue.toString());
+    return this._value.eq(mappedInputValue);
+  }
+
+  /**
+   * Checks if the Decimal value is greater than or equal to the given value.
+   *
+   * @param {Decimal} inputValue - The Decimal value to compare with.
+   * @returns {boolean} True if the value is greater than or equal to the given value, false otherwise.
+   */
+  public isGreaterThanOrEqual(inputValue: Decimal): boolean {
+    if (!(inputValue instanceof Decimal)) {
+      throw new InputParamsNotValidDecimalError('Input params is not Decimal');
+    }
+    const mappedInputValue = Decimal.toBig(inputValue.toString());
+    return this._value.gte(mappedInputValue);
+  }
+
+  /**
+   * Checks if the Decimal value is less than or equal to the given value.
+   *
+   * @param {Decimal} inputValue - The Decimal value to compare with.
+   * @returns {boolean} True if the value is less than or equal to the given value, false otherwise.
+   */
+  public isLessThanOrEqual(inputValue: Decimal): boolean {
+    if (!(inputValue instanceof Decimal)) {
+      throw new InputParamsNotValidDecimalError('Input params is not Decimal');
+    }
+    const mappedInputValue = Decimal.toBig(inputValue.toString());
+    return this._value.lte(mappedInputValue);
+  }
+
+  /**
+   * Checks if the Decimal value is positive.
+   *
+   * @returns {boolean} True if the value is positive (> 0), false otherwise.
+   */
+  public isPositive(): boolean {
+    return this._value.gt(0);
+  }
+
+  /**
+   * Checks if the Decimal value is negative.
+   *
+   * @returns {boolean} True if the value is negative (< 0), false otherwise.
+   */
+  public isNegative(): boolean {
+    return this._value.lt(0);
+  }
+
+  /**
+   * Returns the smaller of the two given Decimal values.
+   *
+   * @param {Decimal} a - The first Decimal value.
+   * @param {Decimal} b - The second Decimal value.
+   * @returns {Decimal} The smaller of the two Decimal values.
+   * @throws {InputParamsNotValidDecimalError} If either input is not a valid Decimal instance.
+   */
+  public static min(a: Decimal, b: Decimal): Decimal {
+    if (!(a instanceof Decimal) || !(b instanceof Decimal)) {
+      throw new InputParamsNotValidDecimalError('Input params is not Decimal');
+    }
+    return a.isLessThan(b) ? a : b;
+  }
+
+  /**
+   * Returns the larger of the two given Decimal values.
+   *
+   * @param {Decimal} a - The first Decimal value.
+   * @param {Decimal} b - The second Decimal value.
+   * @returns {Decimal} The larger of the two Decimal values.
+   * @throws {InputParamsNotValidDecimalError} If either input is not a valid Decimal instance.
+   */
+  public static max(a: Decimal, b: Decimal): Decimal {
+    if (!(a instanceof Decimal) || !(b instanceof Decimal)) {
+      throw new InputParamsNotValidDecimalError('Input params is not Decimal');
+    }
+    return a.isGreaterThan(b) ? a : b;
+  }
+
+  /**
    * Converts the Decimal value to its string representation.
    *
    * @returns {string} The string representation of the Decimal value.

@@ -1,4 +1,4 @@
-import { GetOrdersRequest } from '@t-tech/invest-grpc-web';
+import { GetOrdersRequest } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 import { OrderInformation } from '../types';
 import { Money } from '../../shared/money';

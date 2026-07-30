@@ -1,5 +1,5 @@
 import { BaseError, Decimal } from '@t-tech/invest-shared';
-import { MoneyValue } from '@tinkoff/grpc-node-client';
+import { MoneyValue } from '@ttech-pub/grpc-node-client';
 
 export class UnknownMoneyError extends BaseError {
   override code = 'UnknownMoneyError';

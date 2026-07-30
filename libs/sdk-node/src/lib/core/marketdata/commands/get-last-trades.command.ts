@@ -1,4 +1,4 @@
-import { GetLastTradesRequest } from '@tinkoff/grpc-node-client';
+import { GetLastTradesRequest } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 import { MarketdataTrade } from '../types';
 import { TradesMapper } from '../mappers';

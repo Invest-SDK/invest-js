@@ -1,2 +1,2 @@
 // common reexported types
-export { ResultSubscriptionStatus } from '@t-tech/invest-grpc-web';
+export { ResultSubscriptionStatus } from '@ttech-pub/grpc-web-client';

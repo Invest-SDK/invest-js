@@ -3,13 +3,13 @@ pre-commit:
     - name: lint-staged
       run: npm run pre-commit
 
-prepare-commit-msg:
-  commands:
-    commitizen:
-      interactive: true
-      run: ./prepare-commit-msg.sh
-      env:
-        LEFTHOOK: 0
+#prepare-commit-msg:
+#  commands:
+#    commitizen:
+#      interactive: true
+#      run: ./prepare-commit-msg.sh
+#      env:
+#        LEFTHOOK: 0
 
 commit-msg:
   commands:

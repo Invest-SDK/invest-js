@@ -1,4 +1,4 @@
-import { GetLastTradesRequest } from '@t-tech/invest-grpc-web';
+import { GetLastTradesRequest } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 import { MarketdataTrade } from '../types';
 import { TradesMapper } from '../mappers';

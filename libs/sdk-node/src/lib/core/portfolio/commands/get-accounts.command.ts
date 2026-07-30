@@ -1,9 +1,9 @@
-import { GetAccountsRequest, GetAccountsResponse } from "@tinkoff/grpc-node-client";
-import { APIService, BaseCommand } from "../../shared";
+import { GetAccountsRequest, GetAccountsResponse } from '@ttech-pub/grpc-node-client';
+import { APIService, BaseCommand } from '../../shared';
 
-export interface GetAccountsInput extends GetAccountsRequest { }
+export interface GetAccountsInput extends GetAccountsRequest {}
 
-export interface GetAccountsOutput extends GetAccountsResponse { }
+export interface GetAccountsOutput extends GetAccountsResponse {}
 
 export class GetAccountsCommand extends BaseCommand<GetAccountsInput, Promise<GetAccountsOutput>> {
   public override call(client: APIService): Promise<GetAccountsOutput> {

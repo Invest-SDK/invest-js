@@ -1,4 +1,4 @@
-import { GetCandlesRequest, HistoricCandle } from '@t-tech/invest-grpc-web';
+import { GetCandlesRequest, HistoricCandle } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 import { MarketdataCandlePrices, MarketdataCandlePricesNames } from '../types';
 import { CandlesMapper } from '../mappers';

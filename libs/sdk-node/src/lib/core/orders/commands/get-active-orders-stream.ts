@@ -1,4 +1,4 @@
-import { OrderStateStreamRequest } from '@tinkoff/grpc-node-client';
+import { OrderStateStreamRequest } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 import { OrderStreamItem } from '../types';
 import { OrderStateStreamMapper } from '../mappers';

@@ -1,6 +1,17 @@
-import { WebApiClient } from '@t-tech/invest-grpc-web';
+import { WebApiClient } from '@ttech-pub/grpc-web-client';
 
-export type APIService = Pick<WebApiClient, 'instruments' | 'marketdata' | 'marketdataStream' | 'operations' | 'operationsStream' | 'orders' | 'ordersStream' | 'stopOrders' | 'users'>
+export type APIService = Pick<
+  WebApiClient,
+  | 'instruments'
+  | 'marketdata'
+  | 'marketdataStream'
+  | 'operations'
+  | 'operationsStream'
+  | 'orders'
+  | 'ordersStream'
+  | 'stopOrders'
+  | 'users'
+>;
 
 export abstract class BaseCommand<T, S> {
   #options: T;

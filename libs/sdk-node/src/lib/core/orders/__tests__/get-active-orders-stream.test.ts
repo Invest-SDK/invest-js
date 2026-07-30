@@ -4,7 +4,7 @@ import { firstValueFrom, take, toArray, mergeMap } from 'rxjs';
 import { Decimal } from '@t-tech/invest-shared';
 import { Money } from '../../shared/money';
 import { APIService } from '../../shared';
-import { OrderStateStreamRequest, OrderStateStreamResponse } from '@tinkoff/grpc-node-client';
+import { OrderStateStreamRequest, OrderStateStreamResponse } from '@ttech-pub/grpc-node-client';
 import type { OrderStreamItem } from '../types';
 import { createAsyncIterable } from '../../__tests__';
 import { GetActiveOrdersStreamCommand } from '../commands';
@@ -202,6 +202,7 @@ describe('GetActiveOrdersStreamCommand', () => {
     const mockGrpcResponses: OrderStateStreamResponse[] = [
       {
         orderState: {
+          tradeOrderId: 'dummy',
           orderId: 'order-789',
           executionReportStatus: 1,
           trades: [],

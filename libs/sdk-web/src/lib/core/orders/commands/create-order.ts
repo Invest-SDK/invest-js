@@ -1,4 +1,4 @@
-import { PostOrderRequest, PostOrderResponse } from '@t-tech/invest-grpc-web';
+import { PostOrderRequest, PostOrderResponse } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 import { Decimal } from '@t-tech/invest-shared';
 

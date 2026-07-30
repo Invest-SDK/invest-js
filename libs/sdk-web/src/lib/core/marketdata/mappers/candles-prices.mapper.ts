@@ -1,4 +1,4 @@
-import { Candle } from '@t-tech/invest-grpc-web';
+import { Candle } from '@ttech-pub/grpc-web-client';
 import { Decimal } from '@t-tech/invest-shared';
 import { MarketdataCandlePrices, MarketdataCandlePricesNames } from '../types';
 

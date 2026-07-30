@@ -1,1 +1,0 @@
-tsc && cp -Rf './investAPI/src/docs/contracts/' './build/contracts'

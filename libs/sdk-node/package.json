@@ -9,10 +9,6 @@
     "test": "node --test --import=tsx ./**/*.test.ts"
   },
   "dependencies": {
-    "@t-tech/invest-shared": "0.0.1",
     "rxjs": "^7.8.0"
-  },
-  "peerDependencies": {
-    "@tinkoff/grpc-node-client": "0.0.1"
   }
 }

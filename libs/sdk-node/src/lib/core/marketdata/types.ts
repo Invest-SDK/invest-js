@@ -7,10 +7,10 @@ import {
   Order,
   OrderBook,
   Trade,
-} from '@tinkoff/grpc-node-client';
+} from '@ttech-pub/grpc-node-client';
 
 // reexport types
-export { GetTechAnalysisRequest_Smoothing as TechAnalysisSmoothing } from '@tinkoff/grpc-node-client';
+export { GetTechAnalysisRequest_Smoothing as TechAnalysisSmoothing } from '@ttech-pub/grpc-node-client';
 
 // new types
 

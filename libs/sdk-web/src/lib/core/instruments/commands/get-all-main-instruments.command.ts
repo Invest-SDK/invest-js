@@ -6,7 +6,7 @@ import {
   Option,
   Share,
   InstrumentsRequest,
-} from '@t-tech/invest-grpc-web';
+} from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 import { GetSharesCommand } from './get-shares.command';
 import { GetBondsCommand } from './get-bonds.command';

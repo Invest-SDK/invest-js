@@ -11,4 +11,4 @@ export {
   GetTechAnalysisRequest_IndicatorType as TechAnalysisIndicatorType,
   GetTechAnalysisRequest_IndicatorInterval as TechAnalysisIndicatorInterval,
   LastPriceType,
-} from '@t-tech/invest-grpc-web';
+} from '@ttech-pub/grpc-web-client';

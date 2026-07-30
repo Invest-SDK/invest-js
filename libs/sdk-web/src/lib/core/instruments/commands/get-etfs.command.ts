@@ -1,4 +1,4 @@
-import { InstrumentsRequest, EtfsResponse } from '@t-tech/invest-grpc-web';
+import { InstrumentsRequest, EtfsResponse } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetETFsInput extends InstrumentsRequest {}

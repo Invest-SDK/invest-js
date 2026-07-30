@@ -4,4 +4,4 @@ export {
   InstrumentStatus,
   InstrumentType,
   SecurityTradingStatus,
-} from '@tinkoff/grpc-node-client';
+} from '@ttech-pub/grpc-node-client';

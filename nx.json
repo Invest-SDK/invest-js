@@ -21,6 +21,11 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["default", "^default"]
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/libs/{projectName}"
+      }
     }
   },
   "plugins": [
@@ -47,5 +52,21 @@
       },
       "exclude": ["examples/nest-sdk-e2e/**/*"]
     }
-  ]
+  ],
+  "release": {
+    "groups": {
+      "contract": {
+        "projects": ["libs/grpc", "libs/grpc-node-client", "libs/grpc-web-client"],
+        "projectsRelationship": "fixed",
+        "releaseTagPattern": "v{version}/contract"
+      }
+    },
+    "changelog": {
+      "projectChangelogs": false,
+      "workspaceChangelog": false
+    },
+    "git": {
+      "commitArgs": ["--no-verify"]
+    }
+  }
 }

@@ -1,4 +1,4 @@
-import { GetTradingStatusesResponse, GetTradingStatusesRequest } from '@t-tech/invest-grpc-web';
+import { GetTradingStatusesResponse, GetTradingStatusesRequest } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetTradingStatusesInput extends GetTradingStatusesRequest {}

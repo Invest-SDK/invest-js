@@ -1,4 +1,4 @@
-import { InstrumentsRequest, FuturesResponse } from '@t-tech/invest-grpc-web';
+import { InstrumentsRequest, FuturesResponse } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetFuturesInput extends InstrumentsRequest {}

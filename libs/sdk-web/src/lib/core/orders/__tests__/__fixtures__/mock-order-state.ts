@@ -1,12 +1,13 @@
 import {
   OrderExecutionReportStatus,
   OrderStateStreamResponse_OrderState,
-} from '@tinkoff/grpc-node-client';
+} from '@ttech-pub/grpc-node-client';
 
 export function createMockOrderState(
   params: Partial<OrderStateStreamResponse_OrderState> = {}
 ): OrderStateStreamResponse_OrderState {
   return {
+    tradeOrderId: 'dummy',
     orderId: 'order-123',
     executionReportStatus: OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_FILL,
     initialOrderPrice: {

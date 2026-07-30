@@ -8,8 +8,6 @@ example/.env
 
 .nx/*
 
-
-// VS Code Extensions 
 .history*
 
 tmp/*

@@ -1,4 +1,4 @@
-import { GetBondCouponsRequest, GetBondCouponsResponse } from '@tinkoff/grpc-node-client';
+import { GetBondCouponsRequest, GetBondCouponsResponse } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetBondCouponsInput extends GetBondCouponsRequest {}

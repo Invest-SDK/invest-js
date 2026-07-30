@@ -1,4 +1,4 @@
-import { OrderStateStreamResponse } from '@t-tech/invest-grpc-web';
+import { OrderStateStreamResponse } from '@ttech-pub/grpc-web-client';
 import { OrderStreamItem, OrderTradeInformation } from '../types';
 import { Money } from '../../shared/money';
 import { Decimal } from '@t-tech/invest-shared';

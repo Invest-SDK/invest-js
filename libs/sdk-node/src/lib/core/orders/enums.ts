@@ -4,4 +4,4 @@ export {
   TimeInForceType,
   OrderExecutionReportStatus,
   ResultSubscriptionStatus,
-} from '@tinkoff/grpc-node-client';
+} from '@ttech-pub/grpc-node-client';

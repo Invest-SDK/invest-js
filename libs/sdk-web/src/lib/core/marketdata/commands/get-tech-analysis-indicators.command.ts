@@ -1,4 +1,4 @@
-import { GetTechAnalysisRequest } from '@t-tech/invest-grpc-web';
+import { GetTechAnalysisRequest } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 import { TechAnalysisDeviation, TechAnalysisIndicator } from '../types';
 import { Decimal } from '@t-tech/invest-shared';

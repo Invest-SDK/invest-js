@@ -1,4 +1,4 @@
-import { TradingSchedulesRequest, TradingSchedulesResponse } from '@t-tech/invest-grpc-web';
+import { TradingSchedulesRequest, TradingSchedulesResponse } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetTradingSchedulesInput extends TradingSchedulesRequest {}

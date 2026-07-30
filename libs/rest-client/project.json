@@ -21,7 +21,7 @@
         "script": "test"
       }
     },
-    "generate-clinet": {
+    "generate": {
       "executor": "nx:run-script",
       "options": {
         "script": "generate-client"

@@ -1,5 +1,5 @@
 {
-  "name": "@tinkoff/grpc",
-  "version": "0.0.1",
+  "name": "@ttech-pub/grpc",
+  "version": "1.44.5",
   "private": true
 }

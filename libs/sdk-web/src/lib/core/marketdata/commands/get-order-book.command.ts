@@ -1,4 +1,4 @@
-import { GetOrderBookRequest, GetOrderBookResponse } from '@t-tech/invest-grpc-web';
+import { GetOrderBookRequest, GetOrderBookResponse } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 import { MarketdataOrder } from '../types';
 import { Decimal } from '@t-tech/invest-shared';

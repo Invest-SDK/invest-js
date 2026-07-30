@@ -1,4 +1,4 @@
-import { OrderExecutionReportStatus, OrderStateStreamRequest } from '@t-tech/invest-grpc-web';
+import { OrderExecutionReportStatus, OrderStateStreamRequest } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 import { SuccessOrderStreamItem } from '../types';
 import { OrderStateStreamMapper } from '../mappers';

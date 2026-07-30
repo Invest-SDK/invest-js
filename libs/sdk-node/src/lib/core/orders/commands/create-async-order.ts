@@ -1,4 +1,4 @@
-import { PostOrderAsyncRequest, PostOrderAsyncResponse } from '@tinkoff/grpc-node-client';
+import { PostOrderAsyncRequest, PostOrderAsyncResponse } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 import { Decimal } from '@t-tech/invest-shared';
 

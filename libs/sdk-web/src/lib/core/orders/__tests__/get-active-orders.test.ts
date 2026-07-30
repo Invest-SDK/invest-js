@@ -2,8 +2,8 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import { APIService } from '../../shared';
 import { Money } from '../../shared/money';
-import { GetOrdersRequest, OrderExecutionReportStatus } from '@t-tech/invest-grpc-web';
-import { OrderDirection, OrderType } from '@t-tech/invest-grpc-web';
+import { GetOrdersRequest, OrderExecutionReportStatus } from '@ttech-pub/grpc-web-client';
+import { OrderDirection, OrderType } from '@ttech-pub/grpc-web-client';
 import type { OrderInformation } from '../types';
 import { GetActiveOrdersCommand } from '../commands';
 

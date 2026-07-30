@@ -376,3 +376,349 @@ test('Decimal - toPrimitives: large decimal should convert correctly', () => {
     nano: 123456789,
   });
 });
+
+test('Decimal - isZero: zero value should return true', () => {
+  const d = new Decimal('0');
+  assert.strictEqual(d.isZero(), true);
+});
+
+test('Decimal - isZero: non-zero value should return false', () => {
+  const d = new Decimal('1.5');
+  assert.strictEqual(d.isZero(), false);
+});
+
+test('Decimal - isZero: negative zero value should return true', () => {
+  const d = new Decimal('-0');
+  assert.strictEqual(d.isZero(), true);
+});
+
+test('Decimal - isGreaterThan: greater value should return true', () => {
+  const d1 = new Decimal('5');
+  const d2 = new Decimal('3');
+  assert.strictEqual(d1.isGreaterThan(d2), true);
+});
+
+test('Decimal - isGreaterThan: lesser value should return false', () => {
+  const d1 = new Decimal('3');
+  const d2 = new Decimal('5');
+  assert.strictEqual(d1.isGreaterThan(d2), false);
+});
+
+test('Decimal - isGreaterThan: equal values should return false', () => {
+  const d1 = new Decimal('5');
+  const d2 = new Decimal('5');
+  assert.strictEqual(d1.isGreaterThan(d2), false);
+});
+
+test('Decimal - isGreaterThan: non-Decimal input should throw InputParamsNotValidDecimalError', () => {
+  const d1 = new Decimal('5');
+
+  assert.throws(
+    () => {
+      // @ts-expect-error Testing invalid input
+      d1.isGreaterThan('not-a-decimal');
+    },
+    {
+      name: 'InputParamsNotValidDecimalError',
+      message: 'Input params is not Decimal',
+    }
+  );
+});
+
+test('Decimal - isLessThan: lesser value should return true', () => {
+  const d1 = new Decimal('3');
+  const d2 = new Decimal('5');
+  assert.strictEqual(d1.isLessThan(d2), true);
+});
+
+test('Decimal - isLessThan: greater value should return false', () => {
+  const d1 = new Decimal('5');
+  const d2 = new Decimal('3');
+  assert.strictEqual(d1.isLessThan(d2), false);
+});
+
+test('Decimal - isLessThan: equal values should return false', () => {
+  const d1 = new Decimal('5');
+  const d2 = new Decimal('5');
+  assert.strictEqual(d1.isLessThan(d2), false);
+});
+
+test('Decimal - isLessThan: non-Decimal input should throw InputParamsNotValidDecimalError', () => {
+  const d1 = new Decimal('3');
+
+  assert.throws(
+    () => {
+      // @ts-expect-error Testing invalid input
+      d1.isLessThan('not-a-decimal');
+    },
+    {
+      name: 'InputParamsNotValidDecimalError',
+      message: 'Input params is not Decimal',
+    }
+  );
+});
+
+test('Decimal - abs: positive value should return same value', () => {
+  const d = new Decimal('5.5');
+  const result = d.abs();
+  assert.strictEqual(result.toString(), '5.5');
+});
+
+test('Decimal - abs: negative value should return positive value', () => {
+  const d = new Decimal('-5.5');
+  const result = d.abs();
+  assert.strictEqual(result.toString(), '5.5');
+});
+
+test('Decimal - abs: zero value should return zero', () => {
+  const d = new Decimal('0');
+  const result = d.abs();
+  assert.strictEqual(result.toString(), '0');
+});
+
+test('Decimal - abs: operation should not modify original value', () => {
+  const d = new Decimal('-5.5');
+  const originalValue = d.toString();
+  d.abs();
+  assert.strictEqual(d.toString(), originalValue);
+});
+
+test('Decimal - isEqualTo: equal values should return true', () => {
+  const d1 = new Decimal('5');
+  const d2 = new Decimal('5');
+  assert.strictEqual(d1.isEqualTo(d2), true);
+});
+
+test('Decimal - isEqualTo: different values should return false', () => {
+  const d1 = new Decimal('5');
+  const d2 = new Decimal('3');
+  assert.strictEqual(d1.isEqualTo(d2), false);
+});
+
+test('Decimal - isEqualTo: non-Decimal input should throw InputParamsNotValidDecimalError', () => {
+  const d1 = new Decimal('5');
+
+  assert.throws(
+    () => {
+      // @ts-expect-error Testing invalid input
+      d1.isEqualTo('not-a-decimal');
+    },
+    {
+      name: 'InputParamsNotValidDecimalError',
+      message: 'Input params is not Decimal',
+    }
+  );
+});
+
+test('Decimal - isGreaterThanOrEqual: greater value should return true', () => {
+  const d1 = new Decimal('5');
+  const d2 = new Decimal('3');
+  assert.strictEqual(d1.isGreaterThanOrEqual(d2), true);
+});
+
+test('Decimal - isGreaterThanOrEqual: equal values should return true', () => {
+  const d1 = new Decimal('5');
+  const d2 = new Decimal('5');
+  assert.strictEqual(d1.isGreaterThanOrEqual(d2), true);
+});
+
+test('Decimal - isGreaterThanOrEqual: lesser value should return false', () => {
+  const d1 = new Decimal('3');
+  const d2 = new Decimal('5');
+  assert.strictEqual(d1.isGreaterThanOrEqual(d2), false);
+});
+
+test('Decimal - isGreaterThanOrEqual: non-Decimal input should throw InputParamsNotValidDecimalError', () => {
+  const d1 = new Decimal('5');
+
+  assert.throws(
+    () => {
+      // @ts-expect-error Testing invalid input
+      d1.isGreaterThanOrEqual('not-a-decimal');
+    },
+    {
+      name: 'InputParamsNotValidDecimalError',
+      message: 'Input params is not Decimal',
+    }
+  );
+});
+
+test('Decimal - isLessThanOrEqual: lesser value should return true', () => {
+  const d1 = new Decimal('3');
+  const d2 = new Decimal('5');
+  assert.strictEqual(d1.isLessThanOrEqual(d2), true);
+});
+
+test('Decimal - isLessThanOrEqual: equal values should return true', () => {
+  const d1 = new Decimal('5');
+  const d2 = new Decimal('5');
+  assert.strictEqual(d1.isLessThanOrEqual(d2), true);
+});
+
+test('Decimal - isLessThanOrEqual: greater value should return false', () => {
+  const d1 = new Decimal('5');
+  const d2 = new Decimal('3');
+  assert.strictEqual(d1.isLessThanOrEqual(d2), false);
+});
+
+test('Decimal - isLessThanOrEqual: non-Decimal input should throw InputParamsNotValidDecimalError', () => {
+  const d1 = new Decimal('3');
+
+  assert.throws(
+    () => {
+      // @ts-expect-error Testing invalid input
+      d1.isLessThanOrEqual('not-a-decimal');
+    },
+    {
+      name: 'InputParamsNotValidDecimalError',
+      message: 'Input params is not Decimal',
+    }
+  );
+});
+
+test('Decimal - isPositive: positive value should return true', () => {
+  const d = new Decimal('5.5');
+  assert.strictEqual(d.isPositive(), true);
+});
+
+test('Decimal - isPositive: negative value should return false', () => {
+  const d = new Decimal('-5.5');
+  assert.strictEqual(d.isPositive(), false);
+});
+
+test('Decimal - isPositive: zero value should return false', () => {
+  const d = new Decimal('0');
+  assert.strictEqual(d.isPositive(), false);
+});
+
+test('Decimal - isNegative: negative value should return true', () => {
+  const d = new Decimal('-5.5');
+  assert.strictEqual(d.isNegative(), true);
+});
+
+test('Decimal - isNegative: positive value should return false', () => {
+  const d = new Decimal('5.5');
+  assert.strictEqual(d.isNegative(), false);
+});
+
+test('Decimal - isNegative: zero value should return false', () => {
+  const d = new Decimal('0');
+  assert.strictEqual(d.isNegative(), false);
+});
+
+test('Decimal - min: should return the smaller value', () => {
+  const d1 = new Decimal('3');
+  const d2 = new Decimal('5');
+  const result = Decimal.min(d1, d2);
+  assert.strictEqual(result.toString(), '3');
+});
+
+test('Decimal - min: should return the smaller negative value', () => {
+  const d1 = new Decimal('-5');
+  const d2 = new Decimal('-3');
+  const result = Decimal.min(d1, d2);
+  assert.strictEqual(result.toString(), '-5');
+});
+
+test('Decimal - min: equal values should return either value', () => {
+  const d1 = new Decimal('5');
+  const d2 = new Decimal('5');
+  const result = Decimal.min(d1, d2);
+  assert.strictEqual(result.toString(), '5');
+});
+
+test('Decimal - min: first non-Decimal input should throw InputParamsNotValidDecimalError', () => {
+  const d2 = new Decimal('5');
+
+  assert.throws(
+    () => {
+      // @ts-expect-error Testing invalid input
+      Decimal.min('not-a-decimal', d2);
+    },
+    {
+      name: 'InputParamsNotValidDecimalError',
+      message: 'Input params is not Decimal',
+    }
+  );
+});
+
+test('Decimal - min: second non-Decimal input should throw InputParamsNotValidDecimalError', () => {
+  const d1 = new Decimal('3');
+
+  assert.throws(
+    () => {
+      // @ts-expect-error Testing invalid input
+      Decimal.min(d1, 'not-a-decimal');
+    },
+    {
+      name: 'InputParamsNotValidDecimalError',
+      message: 'Input params is not Decimal',
+    }
+  );
+});
+
+test('Decimal - max: should return the larger value', () => {
+  const d1 = new Decimal('3');
+  const d2 = new Decimal('5');
+  const result = Decimal.max(d1, d2);
+  assert.strictEqual(result.toString(), '5');
+});
+
+test('Decimal - max: should return the larger negative value', () => {
+  const d1 = new Decimal('-5');
+  const d2 = new Decimal('-3');
+  const result = Decimal.max(d1, d2);
+  assert.strictEqual(result.toString(), '-3');
+});
+
+test('Decimal - max: equal values should return either value', () => {
+  const d1 = new Decimal('5');
+  const d2 = new Decimal('5');
+  const result = Decimal.max(d1, d2);
+  assert.strictEqual(result.toString(), '5');
+});
+
+test('Decimal - max: first non-Decimal input should throw InputParamsNotValidDecimalError', () => {
+  const d2 = new Decimal('5');
+
+  assert.throws(
+    () => {
+      // @ts-expect-error Testing invalid input
+      Decimal.max('not-a-decimal', d2);
+    },
+    {
+      name: 'InputParamsNotValidDecimalError',
+      message: 'Input params is not Decimal',
+    }
+  );
+});
+
+test('Decimal - max: second non-Decimal input should throw InputParamsNotValidDecimalError', () => {
+  const d1 = new Decimal('3');
+
+  assert.throws(
+    () => {
+      // @ts-expect-error Testing invalid input
+      Decimal.max(d1, 'not-a-decimal');
+    },
+    {
+      name: 'InputParamsNotValidDecimalError',
+      message: 'Input params is not Decimal',
+    }
+  );
+});
+
+test('Decimal - toString: should return correct string representation', () => {
+  const d = new Decimal('123.456');
+  assert.strictEqual(d.toString(), '123.456');
+});
+
+test('Decimal - toString: should return correct string representation for negative values', () => {
+  const d = new Decimal('-123.456');
+  assert.strictEqual(d.toString(), '-123.456');
+});
+
+test('Decimal - toString: should return correct string representation for scientific notation', () => {
+  const d = new Decimal('1e+24');
+  assert.strictEqual(d.toString(), '1e+24');
+});

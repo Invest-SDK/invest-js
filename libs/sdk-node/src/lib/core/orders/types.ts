@@ -4,7 +4,7 @@ import {
   OrderStateStreamResponse,
   OrderStateStreamResponse_OrderState,
   OrderTrade,
-} from '@tinkoff/grpc-node-client';
+} from '@ttech-pub/grpc-node-client';
 import { Money } from '../shared/money';
 import { Decimal } from '@t-tech/invest-shared';
 

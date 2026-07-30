@@ -1,4 +1,4 @@
-import { GetClosePricesRequest } from '@tinkoff/grpc-node-client';
+import { GetClosePricesRequest } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 import { MarketdataClosePrice } from '../types';
 import { ClosePricesMapper } from '../mappers';

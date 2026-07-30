@@ -6,7 +6,7 @@ import {
   Option,
   Share,
   InstrumentsRequest,
-} from '@tinkoff/grpc-node-client';
+} from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 import { GetSharesCommand } from './get-shares.command';
 import { GetBondsCommand } from './get-bonds.command';

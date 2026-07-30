@@ -1,4 +1,4 @@
-import { NodeApiClient, TTechAPIClientOptions } from '@tinkoff/grpc-node-client';
+import { NodeApiClient, TTechAPIClientOptions } from '@ttech-pub/grpc-node-client';
 import { BaseCommand } from './shared';
 import { EmptyTokenError } from './instance.errors';
 
@@ -8,7 +8,7 @@ export class InvestNodeSDK {
   #client: NodeApiClient;
 
   constructor(options: InverstNodeSDKOptions) {
-    if(options.token === null || options.token === undefined || options.token === '') {
+    if (options.token === null || options.token === undefined || options.token === '') {
       throw new EmptyTokenError('Token is empty');
     }
     this.#client = new NodeApiClient(options);

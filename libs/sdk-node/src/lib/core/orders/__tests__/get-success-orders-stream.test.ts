@@ -8,7 +8,7 @@ import {
   OrderExecutionReportStatus,
   OrderStateStreamRequest,
   OrderStateStreamResponse,
-} from '@tinkoff/grpc-node-client';
+} from '@ttech-pub/grpc-node-client';
 import type { SuccessOrderStreamItem, OrderTradeInformation } from '../types';
 import { createAsyncIterable } from '../../__tests__';
 import { GetSuccessOrdersStreamCommand } from '../commands/get-success-orders-stream';

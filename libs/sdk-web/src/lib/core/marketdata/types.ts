@@ -7,10 +7,10 @@ import {
   Order,
   OrderBook,
   Trade,
-} from '@t-tech/invest-grpc-web';
+} from '@ttech-pub/grpc-web-client';
 
 // reexport types
-export { GetTechAnalysisRequest_Smoothing as TechAnalysisSmoothing } from '@t-tech/invest-grpc-web';
+export { GetTechAnalysisRequest_Smoothing as TechAnalysisSmoothing } from '@ttech-pub/grpc-web-client';
 
 // new types
 

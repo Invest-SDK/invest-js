@@ -1,4 +1,4 @@
-import { InstrumentsRequest, OptionsResponse } from '@t-tech/invest-grpc-web';
+import { InstrumentsRequest, OptionsResponse } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetOptionsInput extends InstrumentsRequest {}

@@ -1,4 +1,4 @@
-import { InstrumentsRequest, SharesResponse } from '@tinkoff/grpc-node-client';
+import { InstrumentsRequest, SharesResponse } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetSharesInput extends InstrumentsRequest {}

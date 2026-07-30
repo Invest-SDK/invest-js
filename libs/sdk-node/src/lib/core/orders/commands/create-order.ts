@@ -1,4 +1,4 @@
-import { PostOrderRequest, PostOrderResponse } from '@tinkoff/grpc-node-client';
+import { PostOrderRequest, PostOrderResponse } from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 import { Decimal } from '@t-tech/invest-shared';
 

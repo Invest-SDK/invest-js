@@ -4,7 +4,7 @@ import assert from 'node:assert';
 import { Decimal } from '@t-tech/invest-shared';
 import { APIService } from '../../shared';
 import { CreateAsyncOrderCommand, CreateAsyncOrderInput } from '../commands/create-async-order';
-import { OrderDirection, OrderType, PriceType, TimeInForceType } from '@tinkoff/grpc-node-client';
+import { OrderDirection, OrderType, PriceType, TimeInForceType } from '@ttech-pub/grpc-node-client';
 
 describe('CreateAsyncOrderCommand', () => {
   test('должен вызвать postOrderAsync без price', async () => {

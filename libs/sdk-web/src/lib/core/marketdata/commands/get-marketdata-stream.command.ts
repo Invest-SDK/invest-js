@@ -1,4 +1,4 @@
-import { MarketDataServerSideStreamRequest } from '@t-tech/invest-grpc-web';
+import { MarketDataServerSideStreamRequest } from '@ttech-pub/grpc-web-client';
 import { APIService, BaseCommand } from '../../shared';
 import { from, map, Observable } from 'rxjs';
 import { MarketDataStreamMapper } from '../mappers';

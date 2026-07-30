@@ -1,7 +1,7 @@
 import {
   GetConsensusForecastsRequest,
   GetConsensusForecastsResponse,
-} from '@tinkoff/grpc-node-client';
+} from '@ttech-pub/grpc-node-client';
 import { APIService, BaseCommand } from '../../shared';
 
 export interface GetConsensusForecastsInput extends GetConsensusForecastsRequest {}

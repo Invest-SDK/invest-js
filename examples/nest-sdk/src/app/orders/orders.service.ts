@@ -28,6 +28,7 @@ export class OrdersService {
       quantity,
       price: new Decimal('1'),
       timeInForce: TimeInForceType.TIME_IN_FORCE_DAY,
+      confirmMarginTrade: false
     });
     return this.investSdk.send(command);
   }

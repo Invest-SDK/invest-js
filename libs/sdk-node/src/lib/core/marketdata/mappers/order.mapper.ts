@@ -1,4 +1,4 @@
-import { Order } from '@tinkoff/grpc-node-client';
+import { Order } from '@ttech-pub/grpc-node-client';
 import { Decimal } from '@t-tech/invest-shared';
 import { MarketdataOrder } from '../types';
 

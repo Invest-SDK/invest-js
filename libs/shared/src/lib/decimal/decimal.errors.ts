@@ -1,4 +1,4 @@
-import { BaseError } from '../base-error';
+import { BaseError } from '../errors/base-error';
 
 export class DivisionByZeroDecimalError extends BaseError {
   override code = 'DivisionByZeroDecimalError';

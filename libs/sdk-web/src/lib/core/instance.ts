@@ -1,4 +1,4 @@
-import { WebApiClient, TTechAPIClientOptions } from '@t-tech/invest-grpc-web';
+import { WebApiClient, TTechAPIClientOptions } from '@ttech-pub/grpc-web-client';
 import { BaseCommand } from './shared';
 import { EmptyTokenError } from './instance.errors';
 
@@ -8,7 +8,7 @@ export class InvestWebSDK {
   #client: WebApiClient;
 
   constructor(options: InverstWebSDKOptions) {
-    if(options.token === null || options.token === undefined || options.token === '') {
+    if (options.token === null || options.token === undefined || options.token === '') {
       throw new EmptyTokenError('Token is empty');
     }
     this.#client = new WebApiClient(options);
