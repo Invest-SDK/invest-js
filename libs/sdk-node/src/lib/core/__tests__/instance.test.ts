@@ -42,4 +42,9 @@ describe('Instance', () => {
     const result = sdk.send(command);
     assert.deepStrictEqual(result, expectedResult);
   });
+
+  test('InvestNodeSDK.create должен успешно создаться с валидным токеном', async () => {
+    const sdk = await InvestNodeSDK.create({ token: 'valid-token' });
+    assert.ok(sdk instanceof InvestNodeSDK);
+  });
 });

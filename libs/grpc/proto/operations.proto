@@ -16,7 +16,7 @@ import "google/api/field_behavior.proto";
 service OperationsService {/*С помощью методов сервиса можно получить:<br/><br/> **1**. Список операций по счету.<br/> **2**.
                               Портфель по счету.<br/> **3**. Позиции ценных бумаг на счете.<br/> **4**.
                               Доступный остаток для вывода средств.<br/> **5**. Различные отчеты.*/
-  //GetOperations — список операций по счету
+  //Deprecated GetOperations — список операций по счету
   //При работе с методом учитывайте [особенности взаимодействия](/invest/services/operations/operations_problems).
   rpc GetOperations(OperationsRequest) returns (OperationsResponse);
 
@@ -123,6 +123,7 @@ message PortfolioResponse {
   repeated VirtualPortfolioPosition virtual_positions = 12; //Массив виртуальных позиций портфеля.
   MoneyValue daily_yield = 15;  // Рассчитанная доходность портфеля за день в рублях.
   Quotation daily_yield_relative = 16; //Относительная доходность в день в %.
+  MoneyValue total_amount_dfa = 17; //Общая стоимость смарт-активов в портфеле в рублях.
 }
 
 //Запрос позиций портфеля по счету.
@@ -174,6 +175,7 @@ message PortfolioPosition {
   MoneyValue daily_yield = 31;  // Рассчитанная доходность портфеля за день.
   string ticker = 32; //Тикер инструмента.
   string class_code = 33; //Класс-код (секция торгов).
+  optional MoneyValue var_margin_settled = 34; //Вариационная маржа (расчетная).
 }
 
 message VirtualPortfolioPosition {
@@ -261,6 +263,7 @@ message GetBrokerReportResponse {
   int32 itemsCount = 2; //Количество записей в отчете.
   int32 pagesCount = 3; //Количество страниц с данными отчета, начинается с 0.
   int32 page = 4; //Текущая страница, начинается с 0.
+  string task_id = 5; //Идентификатор задачи формирования брокерского отчета.
 }
 
 message BrokerReport {
@@ -370,6 +373,7 @@ enum OperationType {
   OPERATION_TYPE_OTHER = 67; //  Операция по счету;
   OPERATION_TYPE_DFA_REDEMPTION = 68; // погашение ЦФА-токена;
   OPERATION_TYPE_PRIMARY_ORDER =69; //  отмена заявки на первичное размещение по ЦФА;
+  OPERATION_TYPE_FUNDING = 70; //Списание фандинга.
 }
 
 message GetDividendsForeignIssuerRequest {
@@ -466,7 +470,7 @@ enum PortfolioSubscriptionStatus {
 //Запрос списка операций по счету с пагинацией.
 message GetOperationsByCursorRequest {
   string account_id = 1 [(google.api.field_behavior) = REQUIRED]; //Идентификатор счета клиента, обязательный параметр. Остальные параметры опциональны.
-  optional string instrument_id	= 2; //Идентификатор инструмента — FIGI или UID инструмента.
+  optional string instrument_id	= 2; //Идентификатор инструмента. Принимает значение `figi`, `instrument_uid` или `ticker + '_' + class_code`.
   optional google.protobuf.Timestamp from = 6; //Начало периода по UTC.
   optional google.protobuf.Timestamp to = 7; //Окончание периода по UTC.
   optional string cursor	= 11; //Идентификатор элемента, с которого начать формировать ответ.

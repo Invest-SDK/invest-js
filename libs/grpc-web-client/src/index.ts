@@ -1,4 +1,4 @@
-import { createChannel, createClientFactory, Metadata } from 'nice-grpc-web';
+import { createChannel, createClientFactory } from 'nice-grpc-web';
 
 import { InstrumentsServiceClient, InstrumentsServiceDefinition } from '../compiled/instruments';
 import {
@@ -22,6 +22,7 @@ import {
 import { StopOrdersServiceClient, StopOrdersServiceDefinition } from '../compiled/stoporders';
 import { SandboxServiceClient, SandboxServiceDefinition } from '../compiled/sandbox';
 import { UsersServiceClient, UsersServiceDefinition } from '../compiled/users';
+import { createMetadata } from './metadata';
 
 export interface TTechAPIClientOptions {
   token: string;
@@ -51,7 +52,7 @@ export class WebApiClient {
     const clientFactory = createClientFactory().use((call, options) =>
       call.next(call.request, {
         ...options,
-        metadata: Metadata(options.metadata).set('Authorization', `Bearer ${token}`),
+        metadata: createMetadata(options.metadata, token),
       })
     );
 

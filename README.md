@@ -17,16 +17,44 @@ npm install @ttech-pub/invest-sdk-node @ttech-pub/invest-core @ttech-pub/grpc-no
 npm install @ttech-pub/invest-engine-node
 ```
 
-Пример создания SDK:
+## Сертификат Минцифры для Node.js
+
+Если Node.js-приложению нужен сертификат Минцифры, включите его загрузку при
+создании SDK:
 
 ```ts
 import { InvestNodeSDK } from '@ttech-pub/invest-sdk-node';
 
-const sdk = new InvestNodeSDK({
+const sdk = await InvestNodeSDK.create({
   token: process.env.INVEST_API_TOKEN!,
   url: process.env.INVEST_API_HOST,
+  useMincifryCertificate: true,
 });
 ```
+
+При включённом флаге SDK перед созданием gRPC-канала скачивает архив с
+[Госуслуг](https://www.gosuslugi.ru/crt), извлекает сертификат и кеширует его в
+памяти процесса. Повторные и параллельные создания SDK в том же процессе не
+скачивают архив заново. URL архива:
+`https://gu-st.ru/content/lending/russiantrustedca.zip`.
+
+Для других Node.js-клиентов сертификат можно добавить через
+`NODE_EXTRA_CA_CERTS`:
+
+```bash
+mkdir -p "$HOME/ca-certificates"
+curl --fail --location \
+  --output "$HOME/ca-certificates/russiantrustedca.zip" \
+  https://gu-st.ru/content/lending/russiantrustedca.zip
+unzip -p "$HOME/ca-certificates/russiantrustedca.zip" russiantrustedca.pem \
+  > "$HOME/ca-certificates/russiantrustedca.pem"
+test -s "$HOME/ca-certificates/russiantrustedca.pem"
+export NODE_EXTRA_CA_CERTS="$HOME/ca-certificates/russiantrustedca.pem"
+```
+
+Перезапустите Node.js-приложение после изменения переменной окружения. Для
+другого внутреннего PEM-файла замените путь в `NODE_EXTRA_CA_CERTS`. Не
+отключайте проверку TLS через `NODE_TLS_REJECT_UNAUTHORIZED=0`.
 
 ## Примеры
 

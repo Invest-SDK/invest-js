@@ -1,4 +1,4 @@
-import { createChannel, createClientFactory, ChannelCredentials, Metadata } from 'nice-grpc';
+import { createChannel, createClientFactory, ChannelCredentials } from 'nice-grpc';
 import { InstrumentsServiceClient, InstrumentsServiceDefinition } from '../compiled/instruments';
 import {
   OrdersStreamServiceClient,
@@ -21,11 +21,14 @@ import {
 import { StopOrdersServiceClient, StopOrdersServiceDefinition } from '../compiled/stoporders';
 import { UsersServiceClient, UsersServiceDefinition } from '../compiled/users';
 import { SandboxServiceClient, SandboxServiceDefinition } from '../compiled/sandbox';
+import { downloadMincifryCertificate } from './mincifry-certificate';
+import { createMetadata } from './metadata';
 
 export interface TTechAPIClientOptions {
   token: string;
   url?: string;
   metadata?: Record<string, string>;
+  useMincifryCertificate?: boolean;
 }
 
 export class NodeApiClient {
@@ -40,7 +43,19 @@ export class NodeApiClient {
   users: UsersServiceClient;
   sandbox: SandboxServiceClient;
 
-  constructor(config: TTechAPIClientOptions) {
+  static async create(config: TTechAPIClientOptions): Promise<NodeApiClient> {
+    const rootCerts = config.useMincifryCertificate
+      ? await downloadMincifryCertificate()
+      : undefined;
+
+    return new NodeApiClient(config, rootCerts);
+  }
+
+  constructor(config: TTechAPIClientOptions, rootCerts?: Buffer) {
+    if (config.useMincifryCertificate && !rootCerts) {
+      throw new Error('useMincifryCertificate requires await NodeApiClient.create(options)');
+    }
+
     const token = config.token;
     const url = config.url || 'https://invest-public-api.tinkoff.ru';
 
@@ -49,11 +64,11 @@ export class NodeApiClient {
     const clientFactory = createClientFactory().use((call, options) =>
       call.next(call.request, {
         ...options,
-        metadata: Metadata(options.metadata).set('Authorization', `Bearer ${token}`),
+        metadata: createMetadata(options.metadata, token),
       })
     );
 
-    const channel = createChannel(url, ChannelCredentials.createSsl());
+    const channel = createChannel(url, ChannelCredentials.createSsl(rootCerts));
 
     this.instruments = clientFactory.create(InstrumentsServiceDefinition, channel);
     this.ordersStream = clientFactory.create(OrdersStreamServiceDefinition, channel);
