@@ -144,6 +144,29 @@ test('TakeProfitRule - isSatisfied method for short position', () => {
   assert.strictEqual(rule.isSatisfied(1, tradingRecord), true);
 });
 
+test('Stop and take-profit rules ignore intrabar-only threshold breaches', () => {
+  const bars = [
+    createTestBar(new Date('2023-01-01'), 100, 100, 100, 100, 1000),
+    createTestBar(new Date('2023-01-02'), 100, 120, 80, 100, 1200),
+  ];
+  const series = new BarSeries({ name: 'TestSeries' }, bars);
+  const longRecord = new TradingRecord(PositionType.LONG);
+  const shortRecord = new TradingRecord(PositionType.SHORT);
+  longRecord.entry(0, new Decimal('100'), new Decimal('1'));
+  shortRecord.entry(0, new Decimal('100'), new Decimal('1'));
+
+  assert.strictEqual(new StopLossRule(series, new Decimal('5')).isSatisfied(1, longRecord), false);
+  assert.strictEqual(new StopLossRule(series, new Decimal('5')).isSatisfied(1, shortRecord), false);
+  assert.strictEqual(
+    new TakeProfitRule(series, new Decimal('10')).isSatisfied(1, longRecord),
+    false
+  );
+  assert.strictEqual(
+    new TakeProfitRule(series, new Decimal('10')).isSatisfied(1, shortRecord),
+    false
+  );
+});
+
 test('TrailingStopRule - constructor and basic functionality', () => {
   const bars = [createTestBar(new Date('2023-01-01'), 100, 110, 90, 105, 1000)];
   const series = new BarSeries({ name: 'TestSeries' }, bars);
@@ -152,6 +175,64 @@ test('TrailingStopRule - constructor and basic functionality', () => {
   const rule = new TrailingStopRule(series, trailPercentage);
 
   assert.strictEqual(rule.getName(), 'TrailingStopRule(5%)');
+});
+
+test('TrailingStopRule - long trail is a percentage of high watermark and closes on close', () => {
+  const bars = [
+    createTestBar(new Date('2023-01-01'), 100, 100, 100, 100, 1000),
+    createTestBar(new Date('2023-01-02'), 185, 200, 180, 185, 1000),
+    createTestBar(new Date('2023-01-03'), 185, 185, 180, 180, 1000),
+  ];
+  const series = new BarSeries({ name: 'TestSeries' }, bars);
+  const record = new TradingRecord(PositionType.LONG);
+  const rule = new TrailingStopRule(series, new Decimal('10'));
+  record.entry(0, new Decimal('100'), new Decimal('1'));
+
+  assert.strictEqual(rule.isSatisfied(0, record), false);
+  assert.strictEqual(rule.isSatisfied(1, record), false, 'close 185 must stay above 180 trail');
+  assert.strictEqual(rule.isSatisfied(2, record), true, 'close 180 must reach 180 trail');
+});
+
+test('TrailingStopRule - short trail is a percentage of low watermark and closes on close', () => {
+  const bars = [
+    createTestBar(new Date('2023-01-01'), 100, 100, 100, 100, 1000),
+    createTestBar(new Date('2023-01-02'), 52, 60, 50, 52, 1000),
+    createTestBar(new Date('2023-01-03'), 52, 55, 50, 55, 1000),
+  ];
+  const series = new BarSeries({ name: 'TestSeries' }, bars);
+  const record = new TradingRecord(PositionType.SHORT);
+  const rule = new TrailingStopRule(series, new Decimal('10'));
+  record.entry(0, new Decimal('100'), new Decimal('1'));
+
+  assert.strictEqual(rule.isSatisfied(0, record), false);
+  assert.strictEqual(rule.isSatisfied(1, record), false, 'close 52 must stay below 55 trail');
+  assert.strictEqual(rule.isSatisfied(2, record), true, 'close 55 must reach 55 trail');
+});
+
+test('TrailingStopRule - evicted LONG entry falls back to entry price', () => {
+  const series = new BarSeries({ name: 'EvictedLong', maxCapacity: 1 }, [
+    createTestBar(new Date('2023-01-01'), 100, 100, 100, 100, 1),
+  ]);
+  const record = new TradingRecord(PositionType.LONG);
+  const rule = new TrailingStopRule(series, new Decimal('10'));
+  record.entry(0, new Decimal('100'), new Decimal('1'));
+  series.addBar(createTestBar(new Date('2023-01-02'), 90, 90, 80, 90, 1));
+
+  assert.strictEqual(series.beginIndex, 1);
+  assert.strictEqual(rule.isSatisfied(1, record), true);
+});
+
+test('TrailingStopRule - evicted SHORT entry falls back to entry price', () => {
+  const series = new BarSeries({ name: 'EvictedShort', maxCapacity: 1 }, [
+    createTestBar(new Date('2023-01-01'), 100, 100, 100, 100, 1),
+  ]);
+  const record = new TradingRecord(PositionType.SHORT);
+  const rule = new TrailingStopRule(series, new Decimal('10'));
+  record.entry(0, new Decimal('100'), new Decimal('1'));
+  series.addBar(createTestBar(new Date('2023-01-02'), 110, 120, 110, 110, 1));
+
+  assert.strictEqual(series.beginIndex, 1);
+  assert.strictEqual(rule.isSatisfied(1, record), true);
 });
 
 test('WaitRule - constructor and basic functionality', () => {

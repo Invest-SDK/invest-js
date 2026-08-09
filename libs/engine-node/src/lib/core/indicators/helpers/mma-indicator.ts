@@ -5,7 +5,9 @@ import { NaNValue } from '../nan';
 /**
  * Wilder's Modified Moving Average (MMA / RMA).
  *
- * Seed at beginIndex + barCount - 1: SMA of the first barCount values.
+ * Seed starts at `beginIndex + seedOffset` and averages `barCount` values.
+ * `seedOffset` defaults to 0; use it to skip source warm-up values such as the
+ * undefined first price change used by RSI.
  * Formula thereafter: prev * (barCount-1)/barCount + current/barCount
  *
  * Used internally by RSI, ATR, ADX.
@@ -13,28 +15,34 @@ import { NaNValue } from '../nan';
 export class MMAIndicator extends AbstractIndicator<Decimal> {
   private readonly _source: Indicator<Decimal>;
   private readonly _barCount: number;
+  private readonly _seedOffset: number;
 
-  constructor(source: Indicator<Decimal>, barCount: number) {
+  constructor(source: Indicator<Decimal>, barCount: number, seedOffset = 0) {
     super(source.getSeries(), `MMA(${source.getName()}, ${barCount})`);
     if (barCount <= 0) {
       throw new Error('barCount must be positive');
     }
+    if (!Number.isInteger(seedOffset) || seedOffset < 0) {
+      throw new Error('seedOffset must be a non-negative integer');
+    }
     this._source = source;
     this._barCount = barCount;
+    this._seedOffset = seedOffset;
   }
 
   protected calculate(index: number): Decimal {
     const series = this.getSeries();
-    const seedIndex = series.beginIndex + this._barCount - 1;
+    const seedStart = series.beginIndex + this._seedOffset;
+    const seedIndex = seedStart + this._barCount - 1;
 
     if (index < seedIndex) {
       return NaNValue;
     }
 
     if (index === seedIndex) {
-      // Seed value: SMA of first barCount values starting at beginIndex
+      // Seed value: SMA of barCount real source values starting at the configured offset.
       let sum = new Decimal('0');
-      for (let i = series.beginIndex; i <= seedIndex; i++) {
+      for (let i = seedStart; i <= seedIndex; i++) {
         sum = sum.add(this._source.getValue(i));
       }
       return sum.divide(new Decimal(this._barCount.toString()));
@@ -55,6 +63,6 @@ export class MMAIndicator extends AbstractIndicator<Decimal> {
     if (!series.isValidIndex(index)) {
       return false;
     }
-    return index >= series.beginIndex + this._barCount - 1;
+    return index >= series.beginIndex + this._seedOffset + this._barCount - 1;
   }
 }

@@ -54,6 +54,7 @@ export class BarSeries {
   private readonly _eventListeners: Map<keyof BarSeriesEventMap, Set<BarSeriesEventHandler<any>>>;
   private _endIndex = -1;
   private _beginIndex = 0;
+  private _revision = 0;
 
   constructor(options: BarSeriesBuilderOptions, bars: Bar[]) {
     this._name = options.name ?? 'BarSeries';
@@ -105,6 +106,11 @@ export class BarSeries {
    */
   get beginIndex(): number {
     return this._beginIndex;
+  }
+
+  /** Версия данных для инвалидации кэшей: растёт при `clear`/`setBars`, но не при append. */
+  get revision(): number {
+    return this._revision;
   }
 
   /**
@@ -257,6 +263,7 @@ export class BarSeries {
     this._bars.length = 0;
     this._endIndex = -1;
     this._beginIndex = 0;
+    this._revision++;
 
     this.emit('seriesReset', undefined);
   }

@@ -91,3 +91,28 @@ test('SimpleLinearRegression: linear series → exact slope', () => {
   assert.equal(v.toString(), '18');
   assert.equal(isNaNValue(slr.getValue(3)), true);
 });
+
+test('SimpleLinearRegression clears slope and intercept state after setBars', () => {
+  const series = makeSeries([
+    [1, 10],
+    [1, 12],
+    [1, 14],
+    [1, 16],
+    [1, 18],
+  ]);
+  const slr = new SimpleLinearRegressionIndicator(new ClosePriceIndicator(series), 5);
+  assert.equal(slr.getSlope(4).toString(), '2');
+  assert.equal(slr.getIntercept(4).toString(), '10');
+
+  const replacement = makeSeries([
+    [1, 10],
+    [1, 9],
+    [1, 8],
+    [1, 7],
+    [1, 6],
+  ]);
+  series.setBars(replacement.getAllBars());
+
+  assert.equal(slr.getSlope(4).toString(), '-1');
+  assert.equal(slr.getIntercept(4).toString(), '10');
+});

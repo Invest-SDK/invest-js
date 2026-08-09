@@ -5,6 +5,7 @@ import { Bar } from '../../bar/bar';
 import { BarSeries } from '../../bar/bar-series';
 import { BaseStrategy } from '../strategy';
 import { FixedRule } from '../../rules/boolean-rules';
+import { PositionType, TradingRecord } from '../../trading/trading-record';
 import { LiveStrategyRunner } from '../live-runner';
 
 function bar(time: Date, price: number): Bar {
@@ -57,4 +58,81 @@ test('LiveStrategyRunner returns null when sizer yields 0', () => {
   });
   const intent = runner.push(bar(new Date(2024, 0, 1), 100));
   assert.equal(intent, null);
+});
+
+test('LiveStrategyRunner counts warm-up from retained history after eviction', () => {
+  const series = new BarSeries({ name: 'T', maxCapacity: 3 }, []);
+  for (let index = 0; index < 5; index++) {
+    series.addBar(bar(new Date(2024, 0, index + 1), 100 + index));
+  }
+  const strategy = new BaseStrategy('warm-up', new FixedRule(5), new FixedRule(99), 5);
+  const runner = new LiveStrategyRunner(series, strategy);
+
+  const intent = runner.push(bar(new Date(2024, 0, 6), 105));
+
+  assert.equal(series.beginIndex, 3);
+  assert.equal(intent, null);
+});
+
+test('LiveStrategyRunner infers SHORT intent and fill side from supplied record', () => {
+  const series = new BarSeries({ name: 'T' }, []);
+  const record = new TradingRecord(PositionType.SHORT);
+  const strategy = new BaseStrategy('short', new FixedRule(0), new FixedRule(99));
+  const runner = new LiveStrategyRunner(series, strategy, { record });
+
+  const intent = runner.push(bar(new Date(2024, 0, 1), 100));
+  assert.ok(intent);
+  runner.recordFill(intent, new Decimal('99'), new Decimal('1'));
+
+  assert.deepEqual(
+    { intent: intent.side, recorded: record.getLastTrade()?.isSell() ? 'sell' : 'buy' },
+    { intent: 'sell', recorded: 'sell' }
+  );
+});
+
+test('LiveStrategyRunner infers LONG intent and fill side from supplied record', () => {
+  const series = new BarSeries({ name: 'T' }, []);
+  const record = new TradingRecord(PositionType.LONG);
+  const strategy = new BaseStrategy('long', new FixedRule(0), new FixedRule(99));
+  const runner = new LiveStrategyRunner(series, strategy, { record });
+
+  const intent = runner.push(bar(new Date(2024, 0, 1), 100));
+  assert.ok(intent);
+  runner.recordFill(intent, new Decimal('101'), new Decimal('1'));
+
+  assert.deepEqual(
+    { intent: intent.side, recorded: record.getLastTrade()?.isBuy() ? 'buy' : 'sell' },
+    { intent: 'buy', recorded: 'buy' }
+  );
+});
+
+test('LiveStrategyRunner accepts matching explicit and record position types', () => {
+  const series = new BarSeries({ name: 'T' }, []);
+  const record = new TradingRecord(PositionType.SHORT);
+  const strategy = new BaseStrategy('short', new FixedRule(0), new FixedRule(99));
+
+  assert.doesNotThrow(
+    () =>
+      new LiveStrategyRunner(series, strategy, {
+        positionType: PositionType.SHORT,
+        record,
+      })
+  );
+});
+
+test('LiveStrategyRunner rejects conflicting position types before mutation', () => {
+  const series = new BarSeries({ name: 'T' }, []);
+  const record = new TradingRecord(PositionType.SHORT);
+  const strategy = new BaseStrategy('short', new FixedRule(0), new FixedRule(99));
+
+  assert.throws(
+    () =>
+      new LiveStrategyRunner(series, strategy, {
+        positionType: PositionType.LONG,
+        record,
+      }),
+    /positionType.*record/
+  );
+  assert.equal(series.barCount, 0);
+  assert.equal(record.tradeCount, 0);
 });

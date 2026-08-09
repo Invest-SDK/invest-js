@@ -209,7 +209,7 @@ export class CrossedDownIndicatorRule extends AbstractRule {
 }
 
 /**
- * Индикатор пересёк значение снизу вверх
+ * Индикатор пересёк значение снизу вверх; текущий и предыдущий бары должны быть готовы.
  */
 export class CrossedUpValueRule extends AbstractRule {
   private readonly _indicator: Indicator<Decimal>;
@@ -226,7 +226,7 @@ export class CrossedUpValueRule extends AbstractRule {
       return false;
     }
 
-    if (!this._indicator.isReady(index)) {
+    if (!this._indicator.isReady(index) || !this._indicator.isReady(index - 1)) {
       return false;
     }
 
@@ -240,7 +240,7 @@ export class CrossedUpValueRule extends AbstractRule {
 }
 
 /**
- * Индикатор пересёк значение сверху вниз
+ * Индикатор пересёк значение сверху вниз; текущий и предыдущий бары должны быть готовы.
  */
 export class CrossedDownValueRule extends AbstractRule {
   private readonly _indicator: Indicator<Decimal>;
@@ -257,7 +257,7 @@ export class CrossedDownValueRule extends AbstractRule {
       return false;
     }
 
-    if (!this._indicator.isReady(index)) {
+    if (!this._indicator.isReady(index) || !this._indicator.isReady(index - 1)) {
       return false;
     }
 

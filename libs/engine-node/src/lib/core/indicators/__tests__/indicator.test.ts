@@ -103,6 +103,30 @@ test('AbstractIndicator - caching works correctly', () => {
   assert.strictEqual(indicator.getCacheSize(), 2); // Indices 0 and 1 have been accessed
 });
 
+test('AbstractIndicator - destructive series reset invalidates cached values', () => {
+  const series = new BarSeries({ name: 'TestSeries' }, [
+    createTestBar(new Date('2023-01-01'), 5, 5, 5, 5, 1),
+  ]);
+  const indicator = new TestIndicator(series);
+
+  assert.strictEqual(indicator.getValue(0).toString(), '10');
+  series.setBars([createTestBar(new Date('2023-01-02'), 20, 20, 20, 20, 1)]);
+  assert.strictEqual(indicator.getValue(0).toString(), '40');
+});
+
+test('AbstractIndicator - evicted cached index is not valid', () => {
+  const series = new BarSeries({ name: 'TestSeries', maxCapacity: 2 }, [
+    createTestBar(new Date('2023-01-01'), 5, 5, 5, 5, 1),
+    createTestBar(new Date('2023-01-02'), 10, 10, 10, 10, 1),
+  ]);
+  const indicator = new TestIndicator(series);
+
+  assert.strictEqual(indicator.getValue(0).toString(), '10');
+  series.addBar(createTestBar(new Date('2023-01-03'), 15, 15, 15, 15, 1));
+  assert.strictEqual(series.beginIndex, 1);
+  assert.ok(isNaNValue(indicator.getValue(0)));
+});
+
 test('AbstractIndicator - clearCache method', () => {
   const bars = [
     createTestBar(new Date('2023-01-01'), 100, 110, 90, 105, 1000),

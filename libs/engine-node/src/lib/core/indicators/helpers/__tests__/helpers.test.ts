@@ -258,6 +258,23 @@ test('MMAIndicator - seed equals SMA of first n bars', () => {
   assert.strictEqual(mma.getValue(2).toString(), '2');
 });
 
+test('MMAIndicator - optional seed offset shifts the real input window', () => {
+  const { close } = makeSeries([1, 2, 3, 4, 5]);
+  const mma = new MMAIndicator(close, 3, 1);
+
+  assert.strictEqual(mma.isReady(2), false);
+  assert.ok(isNaNValue(mma.getValue(2)));
+  assert.strictEqual(mma.isReady(3), true);
+  assert.strictEqual(mma.getValue(3).toString(), '3');
+});
+
+test('MMAIndicator - seed offset must be a non-negative integer', () => {
+  const { close } = makeSeries([1, 2, 3]);
+
+  assert.throws(() => new MMAIndicator(close, 3, -1), /seedOffset/);
+  assert.throws(() => new MMAIndicator(close, 3, 0.5), /seedOffset/);
+});
+
 test('MMAIndicator - recursive formula after seed', () => {
   // closes [1,2,3,4,5,6], n=3
   // index 2: seed = 2

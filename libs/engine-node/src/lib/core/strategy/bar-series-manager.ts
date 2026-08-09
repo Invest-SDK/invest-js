@@ -29,7 +29,7 @@ export interface RunOptions {
   positionSizer?: PositionSizer;
   /** Начальный капитал бэктеста (для %-сайзеров). Default = 0. */
   initialEquity?: Decimal;
-  /** Начальный индекс итерации (default: series.beginIndex) */
+  /** Начальный индекс итерации; доступная до него история учитывается в warm-up. */
   startIndex?: number;
   /** Конечный индекс итерации (default: series.endIndex) */
   endIndex?: number;
@@ -94,7 +94,10 @@ export class BarSeriesManager {
         : new ZeroCostModel());
 
     const record = new TradingRecord(positionType);
-    const unstableUntil = startIndex + strategy.getUnstableBars();
+    const unstableUntil = Math.max(
+      startIndex,
+      this._series.beginIndex + strategy.getUnstableBars()
+    );
     const isLong = positionType === PositionType.LONG;
 
     for (let i = startIndex; i <= endIndex; i++) {

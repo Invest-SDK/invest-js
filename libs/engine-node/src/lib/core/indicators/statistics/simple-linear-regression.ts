@@ -56,6 +56,12 @@ export class SimpleLinearRegressionIndicator extends AbstractIndicator<Decimal> 
     return slope.multiply(new Decimal((this._barCount - 1).toString())).add(intercept);
   }
 
+  clearCache(): void {
+    super.clearCache();
+    this._slopes.clear();
+    this._intercepts.clear();
+  }
+
   isReady(index: number): boolean {
     const series = this.getSeries();
     if (!series.isValidIndex(index)) return false;
@@ -65,14 +71,14 @@ export class SimpleLinearRegressionIndicator extends AbstractIndicator<Decimal> 
   /** Наклон регрессии на указанном баре (NaN sentinel при warm-up). */
   getSlope(index: number): Decimal {
     if (!this.isReady(index)) return NaNValue;
-    if (!this._slopes.has(index)) this.getValue(index);
+    this.getValue(index);
     return this._slopes.get(index) ?? NaNValue;
   }
 
   /** Свободный член регрессии (значение при x = 0). */
   getIntercept(index: number): Decimal {
     if (!this.isReady(index)) return NaNValue;
-    if (!this._intercepts.has(index)) this.getValue(index);
+    this.getValue(index);
     return this._intercepts.get(index) ?? NaNValue;
   }
 }

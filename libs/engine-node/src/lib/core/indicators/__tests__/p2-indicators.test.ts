@@ -114,6 +114,27 @@ test('Parabolic SAR returns finite value', () => {
   assert.equal(isNaNValue(v), false);
 });
 
+test('Parabolic SAR rebuilds recurrence state after setBars', () => {
+  const initial = Array.from({ length: 8 }, (_, i) => {
+    const p = 10 + i;
+    return [p, p + 1, p - 1, p, 1] as [number, number, number, number, number];
+  });
+  const replacement = Array.from({ length: 8 }, (_, i) => {
+    const p = 20 - i;
+    return [p, p + 2, p - 2, p, 1] as [number, number, number, number, number];
+  });
+  const series = ohlcv(initial);
+  const sar = new ParabolicSARIndicator(series);
+  const oldValue = sar.getValue(series.endIndex);
+
+  const replacementSeries = ohlcv(replacement);
+  series.setBars(replacementSeries.getAllBars());
+  const expected = new ParabolicSARIndicator(series).getValue(series.endIndex);
+
+  assert.notEqual(oldValue.toString(), expected.toString());
+  assert.equal(sar.getValue(series.endIndex).toString(), expected.toString());
+});
+
 test('Ichimoku core lines ready after warm-up', () => {
   const series = ohlcv(
     Array.from({ length: 120 }, (_, i) => [100 + i, 101 + i, 99 + i, 100 + i, 1])
@@ -129,9 +150,69 @@ test('Ichimoku core lines ready after warm-up', () => {
   // Senkou A/B опираются на бары в прошлом — должны быть готовы на последнем.
   assert.equal(isNaNValue(sa.getValue(last)), false);
   assert.equal(isNaNValue(sb.getValue(last)), false);
-  // Chikou сдвинут в будущее — на последнем баре NaN, на (last - 26) — value.
-  assert.equal(isNaNValue(chikou.getValue(last)), true);
-  assert.equal(isNaNValue(chikou.getValue(last - 26)), false);
+  // Chikou возвращает исторический close и не готов до накопления offset баров.
+  assert.equal(chikou.getValue(last).toString(), '193');
+  assert.equal(isNaNValue(chikou.getValue(25)), true);
+});
+
+test('Ichimoku Chikou offset 2 returns lagged close after readiness boundary', () => {
+  const series = ohlcv([
+    [10, 10, 10, 10, 1],
+    [11, 11, 11, 11, 1],
+    [12, 12, 12, 12, 1],
+  ]);
+  const chikou = new IchimokuChikouSpanIndicator(series, 2);
+
+  assert.equal(isNaNValue(chikou.getValue(0)), true);
+  assert.equal(isNaNValue(chikou.getValue(1)), true);
+  assert.equal(chikou.getValue(2).toString(), '10');
+});
+
+test('Ichimoku Chikou value cannot change when future closes are replaced', () => {
+  const series = ohlcv([
+    [10, 10, 10, 10, 1],
+    [11, 11, 11, 11, 1],
+    [12, 12, 12, 12, 1],
+    [13, 13, 13, 13, 1],
+    [14, 14, 14, 14, 1],
+  ]);
+  const chikou = new IchimokuChikouSpanIndicator(series, 2);
+  const before = chikou.getValue(2).toString();
+
+  const replacement = ohlcv([
+    [10, 10, 10, 10, 1],
+    [11, 11, 11, 11, 1],
+    [12, 12, 12, 12, 1],
+    [50, 50, 50, 50, 1],
+    [99, 99, 99, 99, 1],
+  ]);
+  series.setBars(replacement.getAllBars());
+  const after = chikou.getValue(2).toString();
+
+  assert.deepEqual({ before, after }, { before: '10', after: '10' });
+});
+
+test('Ichimoku Chikou offset 0 returns current close', () => {
+  const series = ohlcv([
+    [10, 10, 10, 10, 1],
+    [11, 11, 11, 11, 1],
+  ]);
+  const chikou = new IchimokuChikouSpanIndicator(series, 0);
+
+  assert.equal(chikou.getValue(1).toString(), '11');
+});
+
+test('Ichimoku Chikou rejects negative and non-integer offsets', () => {
+  const series = ohlcv([[10, 10, 10, 10, 1]]);
+
+  assert.throws(
+    () => new IchimokuChikouSpanIndicator(series, -1),
+    /offset must be a non-negative integer/
+  );
+  assert.throws(
+    () => new IchimokuChikouSpanIndicator(series, 1.5),
+    /offset must be a non-negative integer/
+  );
 });
 
 test('ZLEMA / KAMA produce finite values after warm-up', () => {

@@ -17,6 +17,7 @@ import {
   IndicatorUnderIndicatorRule,
 } from '../comparison-rules';
 import { ClosePriceIndicator, SMAIndicator } from '../../indicators';
+import { NaNValue } from '../../indicators/nan';
 
 // Helper function to create a test bar
 function createTestBar(
@@ -314,6 +315,32 @@ test('CrossedDownValueRule - isSatisfied method', () => {
 
   // Index 3: 90, Previous: 95 -> 90 < 100? Yes, 95 < 100? Yes -> Already below
   assert.strictEqual(rule.isSatisfied(3), false);
+});
+
+test('Crossed value rules ignore the first ready value and detect later crossings', () => {
+  const bars = [100, 100, 100, 100].map((close, index) =>
+    createTestBar(new Date(2023, 0, index + 1), close, close, close, close, 1)
+  );
+  const series = new BarSeries({ name: 'TestSeries' }, bars);
+  const upValues = [NaNValue, new Decimal('2'), new Decimal('0'), new Decimal('2')];
+  const downValues = [NaNValue, new Decimal('-2'), new Decimal('0'), new Decimal('-2')];
+  const upIndicator = new (class extends ClosePriceIndicator {
+    protected calculate(index: number): Decimal {
+      return upValues[index];
+    }
+  })(series);
+  const downIndicator = new (class extends ClosePriceIndicator {
+    protected calculate(index: number): Decimal {
+      return downValues[index];
+    }
+  })(series);
+  const crossedUp = new CrossedUpValueRule(upIndicator, new Decimal('1'));
+  const crossedDown = new CrossedDownValueRule(downIndicator, new Decimal('-1'));
+
+  assert.strictEqual(crossedUp.isSatisfied(1), false);
+  assert.strictEqual(crossedDown.isSatisfied(1), false);
+  assert.strictEqual(crossedUp.isSatisfied(3), true);
+  assert.strictEqual(crossedDown.isSatisfied(3), true);
 });
 
 test('IndicatorOverIndicatorRule - isSatisfied method', () => {

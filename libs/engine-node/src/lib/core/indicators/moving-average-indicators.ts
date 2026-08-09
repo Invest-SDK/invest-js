@@ -17,6 +17,7 @@ import { NaNValue } from './nan';
  * SMA = (P₁ + P₂ + ... + Pₙ) / n
  *
  * где P - цены закрытия, n - период.
+ * Для вложенного индикатора всё окно источника должно быть готово.
  *
  * @example
  * ```typescript
@@ -59,10 +60,7 @@ export class SMAIndicator extends AbstractIndicator<Decimal> {
    * @inheritDoc
    */
   protected calculate(index: number): Decimal {
-    const series = this.getSeries();
-    // Окно SMA опирается на абсолютные индексы серии: warm-up относительно
-    // series.beginIndex, чтобы корректно работать после вытеснения старых баров.
-    if (index < series.beginIndex + this._barCount - 1) {
+    if (!this.isReady(index)) {
       return NaNValue;
     }
 
@@ -77,10 +75,16 @@ export class SMAIndicator extends AbstractIndicator<Decimal> {
 
   isReady(index: number): boolean {
     const series = this.getSeries();
-    if (!series.isValidIndex(index)) {
+    if (!series.isValidIndex(index) || index < series.beginIndex + this._barCount - 1) {
       return false;
     }
-    return index >= series.beginIndex + this._barCount - 1;
+
+    for (let i = 0; i < this._barCount; i++) {
+      if (!this._source.isReady(index - i)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -167,11 +171,18 @@ export class EMAIndicator extends AbstractIndicator<Decimal> {
     if (!series.isValidIndex(index)) {
       return false;
     }
+    this.getValue(index);
     const seedIndex = this.effectiveSeedIndex();
     return seedIndex !== null && index >= seedIndex;
   }
 
   private _cachedSeedIndex: number | undefined;
+
+  clearCache(): void {
+    super.clearCache();
+    this._cachedSeedIndex = undefined;
+  }
+
   private effectiveSeedIndex(): number | null {
     // Кэшируем только успешно найденный seed: для streaming-серии новые бары
     // могут открыть окно, которого ещё не было — null оставляем без кэша.

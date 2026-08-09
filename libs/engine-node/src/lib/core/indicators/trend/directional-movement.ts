@@ -102,7 +102,8 @@ export class MinusDIIndicator extends AbstractIndicator<Decimal> {
  * ADXIndicator — Average Directional Index.
  *
  * DX = 100 * |+DI - -DI| / (+DI + -DI).
- * ADX = Wilder's MMA of DX.
+ * ADX = Wilder's MMA seeded from `barCount` ready DX values; warm-up NaNs are
+ * never included in the seed.
  */
 export class ADXIndicator extends AbstractIndicator<Decimal> {
   private readonly _mmaDX: MMAIndicator;
@@ -112,7 +113,7 @@ export class ADXIndicator extends AbstractIndicator<Decimal> {
     const plusDI = new PlusDIIndicator(series, barCount);
     const minusDI = new MinusDIIndicator(series, barCount);
     const dx = new DXIndicator(plusDI, minusDI);
-    this._mmaDX = new MMAIndicator(dx, barCount);
+    this._mmaDX = new MMAIndicator(dx, barCount, barCount - 1);
   }
 
   protected calculate(index: number): Decimal {
@@ -132,13 +133,11 @@ class DXIndicator extends AbstractIndicator<Decimal> {
 
   protected calculate(index: number): Decimal {
     if (!this._plus.isReady(index) || !this._minus.isReady(index)) {
-      // Возвращаем 0 на warm-up: MMA(DX) корректно стартует с этих нулей,
-      // а реальный сигнал ADX сам по себе требует двух циклов Wilder-сглаживания.
-      return new Decimal('0');
+      return NaNValue;
     }
     const p = this._plus.getValue(index);
     const m = this._minus.getValue(index);
-    if (isNaNValue(p) || isNaNValue(m)) return new Decimal('0');
+    if (isNaNValue(p) || isNaNValue(m)) return NaNValue;
     const sum = p.add(m);
     if (sum.isZero()) return new Decimal('0');
     return p.subtract(m).abs().divide(sum).multiply(new Decimal('100'));

@@ -64,6 +64,19 @@ test('RSIIndicator - warm-up: indices 0..barCount-1 are not ready', () => {
   assert.strictEqual(rsi.isReady(3), true);
 });
 
+test('RSIIndicator - RSI(3) seeds from three real price changes', () => {
+  const rsi = new RSIIndicator(makeSeries([10, 11, 10, 11]), 3);
+
+  for (let index = 0; index < 3; index++) {
+    assert.strictEqual(rsi.isReady(index), false);
+  }
+  assert.strictEqual(rsi.isReady(3), true);
+  assert.ok(
+    withinTolerance(rsi.getValue(3), new Decimal('66.666666666666666667'), '0.000000000000000001'),
+    rsi.getValue(3).toString()
+  );
+});
+
 test('RSIIndicator - monotone up → RSI approaches 100', () => {
   // All gains, no losses → avgLoss → 0 → RSI = 100
   const closes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];

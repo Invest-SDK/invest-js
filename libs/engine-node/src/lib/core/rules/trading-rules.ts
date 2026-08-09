@@ -13,7 +13,8 @@ import { Indicator } from '../indicators';
 /**
  * Правило стоп-лосса
  *
- * Условие выполняется, когда цена падает ниже указанного процента от цены входа
+ * Условие подтверждается ценой закрытия бара, когда она достигает заданного
+ * процента убытка от цены входа.
  */
 export class StopLossRule extends AbstractRule {
   private readonly _barSeries: BarSeries;
@@ -54,12 +55,12 @@ export class StopLossRule extends AbstractRule {
       const stopPrice = entryPrice.multiply(
         new Decimal('1').subtract(this._lossPercentage.divide(new Decimal('100')))
       );
-      return bar.low.isLessThanOrEqual(stopPrice);
+      return bar.close.isLessThanOrEqual(stopPrice);
     } else {
       const stopPrice = entryPrice.multiply(
         new Decimal('1').add(this._lossPercentage.divide(new Decimal('100')))
       );
-      return bar.high.isGreaterThanOrEqual(stopPrice);
+      return bar.close.isGreaterThanOrEqual(stopPrice);
     }
   }
 }
@@ -67,7 +68,8 @@ export class StopLossRule extends AbstractRule {
 /**
  * Правило тейк-профита
  *
- * Условие выполняется, когда цена растёт выше указанного процента от цены входа
+ * Условие подтверждается ценой закрытия бара, когда она достигает заданного
+ * процента прибыли от цены входа.
  */
 export class TakeProfitRule extends AbstractRule {
   private readonly _barSeries: BarSeries;
@@ -108,12 +110,12 @@ export class TakeProfitRule extends AbstractRule {
       const targetPrice = entryPrice.multiply(
         new Decimal('1').add(this._profitPercentage.divide(new Decimal('100')))
       );
-      return bar.high.isGreaterThanOrEqual(targetPrice);
+      return bar.close.isGreaterThanOrEqual(targetPrice);
     } else {
       const targetPrice = entryPrice.multiply(
         new Decimal('1').subtract(this._profitPercentage.divide(new Decimal('100')))
       );
-      return bar.low.isLessThanOrEqual(targetPrice);
+      return bar.close.isLessThanOrEqual(targetPrice);
     }
   }
 }
@@ -121,7 +123,8 @@ export class TakeProfitRule extends AbstractRule {
 /**
  * Trailing Stop Rule - Трейлинг-стоп
  *
- * Сдвигает стоп-лосс по мере движения цены в благоприятном направлении
+ * Сдвигает стоп на заданный процент от последнего благоприятного high/low.
+ * Пробой подтверждается ценой закрытия бара.
  */
 export class TrailingStopRule extends AbstractRule {
   private readonly _barSeries: BarSeries;
@@ -160,7 +163,8 @@ export class TrailingStopRule extends AbstractRule {
     }
 
     const isLong = tradingRecord.positionType === PositionType.LONG;
-    const trailAmount = entryPrice.multiply(this._trailPercentage.divide(new Decimal('100')));
+    const trailRatio = this._trailPercentage.divide(new Decimal('100'));
+    const one = new Decimal('1');
 
     // Don't trigger trailing stop on entry bar — но именно на entry-баре
     // инициализируем _trailingPrice, иначе при монотонном падении после
@@ -170,7 +174,9 @@ export class TrailingStopRule extends AbstractRule {
       this._entryIndex = index;
       this._highestPrice = bar.high;
       this._lowestPrice = bar.low;
-      this._trailingPrice = isLong ? bar.high.subtract(trailAmount) : bar.low.add(trailAmount);
+      this._trailingPrice = isLong
+        ? bar.high.multiply(one.subtract(trailRatio))
+        : bar.low.multiply(one.add(trailRatio));
       return false;
     }
 
@@ -178,33 +184,35 @@ export class TrailingStopRule extends AbstractRule {
     // (тот же rule-инстанс используется для нескольких записей).
     if (entryTrade && this._entryIndex !== entryTrade.getIndex()) {
       this._entryIndex = entryTrade.getIndex();
-      this._highestPrice = isLong ? bar.high : null;
-      this._lowestPrice = isLong ? null : bar.low;
-      this._trailingPrice = isLong ? bar.high.subtract(trailAmount) : bar.low.add(trailAmount);
+      const entryBar = this._barSeries.getBar(this._entryIndex);
+      const initialWatermark = isLong
+        ? (entryBar?.high ?? entryPrice)
+        : (entryBar?.low ?? entryPrice);
+      this._highestPrice = isLong ? initialWatermark : null;
+      this._lowestPrice = isLong ? null : initialWatermark;
+      this._trailingPrice = initialWatermark.multiply(
+        isLong ? one.subtract(trailRatio) : one.add(trailRatio)
+      );
     }
 
     if (isLong) {
       // For long positions: track highest high and trailing stop below it
       if (bar.high.isGreaterThan(this._highestPrice || new Decimal('-Infinity'))) {
         this._highestPrice = bar.high;
-        // Update trailing price - maintain distance below highest price
-        this._trailingPrice = this._highestPrice.subtract(trailAmount);
+        this._trailingPrice = this._highestPrice.multiply(one.subtract(trailRatio));
       }
 
-      // Check if current low breaches trailing stop
-      if (this._trailingPrice && bar.low.isLessThanOrEqual(this._trailingPrice)) {
+      if (this._trailingPrice && bar.close.isLessThanOrEqual(this._trailingPrice)) {
         return true;
       }
     } else {
       // For short positions: track lowest low and trailing stop above it
       if (bar.low.isLessThan(this._lowestPrice || new Decimal('Infinity'))) {
         this._lowestPrice = bar.low;
-        // Update trailing price - maintain distance above lowest price
-        this._trailingPrice = this._lowestPrice.add(trailAmount);
+        this._trailingPrice = this._lowestPrice.multiply(one.add(trailRatio));
       }
 
-      // Check if current high breaches trailing stop
-      if (this._trailingPrice && bar.high.isGreaterThanOrEqual(this._trailingPrice)) {
+      if (this._trailingPrice && bar.close.isGreaterThanOrEqual(this._trailingPrice)) {
         return true;
       }
     }

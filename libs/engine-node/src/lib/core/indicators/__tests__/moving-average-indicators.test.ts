@@ -5,7 +5,8 @@ import { Bar } from '../../bar/bar';
 import { BarSeries } from '../../bar/bar-series';
 import { SMAIndicator, EMAIndicator } from '../moving-average-indicators';
 import { ClosePriceIndicator } from '../price-indicators';
-import { isNaNValue } from '../nan';
+import { AbstractIndicator } from '../indicator';
+import { NaNValue, isNaNValue } from '../nan';
 
 // Helper function to create a test bar
 function createTestBar(
@@ -95,6 +96,19 @@ test('SMAIndicator - calculate values', () => {
 
   // SMA(3) for index 4: (110 + 115 + 120) / 3 = 115
   assert.strictEqual(sma3.getValue(4).toString(), '115');
+});
+
+test('SMAIndicator - nested source must be ready for the full window', () => {
+  const bars = [100, 105, 110, 115].map((close, index) =>
+    createTestBar(new Date(2023, 0, index + 1), close, close, close, close, 1)
+  );
+  const series = new BarSeries({ name: 'TestSeries' }, bars);
+  const nested = new SMAIndicator(new SMAIndicator(series, 3), 2);
+
+  assert.strictEqual(nested.isReady(2), false);
+  assert.ok(isNaNValue(nested.getValue(2)));
+  assert.strictEqual(nested.isReady(3), true);
+  assert.strictEqual(nested.getValue(3).toString(), '107.5');
 });
 
 test('SMAIndicator - caching works correctly', () => {
@@ -193,6 +207,78 @@ test('EMAIndicator - calculate values', () => {
 
   // EMA(4) = (120 - 110) * 0.5 + 110 = 5 + 110 = 115
   assert.strictEqual(ema3.getValue(4).toString(), '115');
+});
+
+test('SMA and EMA recompute after setBars but preserve append-only cache', () => {
+  const makeBars = (closes: number[]) =>
+    closes.map((close, index) =>
+      createTestBar(new Date(2023, 0, index + 1), close, close, close, close, 1)
+    );
+  const series = new BarSeries({ name: 'TestSeries' }, makeBars([1, 2, 3, 4]));
+  const sma = new SMAIndicator(series, 3);
+  const ema = new EMAIndicator(series, 3);
+
+  assert.strictEqual(sma.getValue(2).toString(), '2');
+  assert.strictEqual(ema.getValue(3).toString(), '3');
+  const smaCacheSize = sma.getCacheSize();
+  const emaCacheSize = ema.getCacheSize();
+
+  series.addBar(createTestBar(new Date(2023, 0, 5), 5, 5, 5, 5, 1));
+  assert.strictEqual(sma.getValue(2).toString(), '2');
+  assert.strictEqual(ema.getValue(3).toString(), '3');
+  assert.strictEqual(sma.getCacheSize(), smaCacheSize);
+  assert.strictEqual(ema.getCacheSize(), emaCacheSize);
+
+  series.setBars(makeBars([10, 20, 30, 40]));
+  assert.strictEqual(sma.getValue(2).toString(), '20');
+  assert.strictEqual(ema.getValue(3).toString(), '30');
+});
+
+test('EMAIndicator - reset rebuilds a source-dependent seed index', () => {
+  class ThresholdIndicator extends AbstractIndicator<Decimal> {
+    protected calculate(index: number): Decimal {
+      const close = this.getClosePrice(index);
+      return close.isLessThan(new Decimal('10')) ? NaNValue : close;
+    }
+  }
+
+  const makeSeries = (closes: number[]) =>
+    new BarSeries(
+      { name: 'TestSeries' },
+      closes.map((close, index) =>
+        createTestBar(new Date(2023, 0, index + 1), close, close, close, close, 1)
+      )
+    );
+  const series = makeSeries([1, 1, 10, 10, 10]);
+  const ema = new EMAIndicator(new ThresholdIndicator(series, 'Threshold'), 2);
+  assert.strictEqual(ema.getValue(4).toString(), '10');
+
+  const replacement = makeSeries([10, 10, 100, 10, 10]);
+  series.setBars(replacement.getAllBars());
+  const expected = new EMAIndicator(new ThresholdIndicator(series, 'Threshold'), 2).getValue(4);
+
+  assert.strictEqual(ema.getValue(4).toString(), expected.toString());
+});
+
+test('EMAIndicator - isReady refreshes the seed after setBars before getValue', () => {
+  class ThresholdIndicator extends AbstractIndicator<Decimal> {
+    protected calculate(index: number): Decimal {
+      const close = this.getClosePrice(index);
+      return close.isLessThan(new Decimal('10')) ? NaNValue : close;
+    }
+  }
+
+  const makeBars = (closes: number[]) =>
+    closes.map((close, index) =>
+      createTestBar(new Date(2023, 0, index + 1), close, close, close, close, 1)
+    );
+  const series = new BarSeries({ name: 'TestSeries' }, makeBars([1, 1, 10, 10]));
+  const ema = new EMAIndicator(new ThresholdIndicator(series, 'Threshold'), 2);
+  assert.strictEqual(ema.isReady(3), true);
+
+  series.setBars(makeBars([10, 10, 10, 10]));
+
+  assert.strictEqual(ema.isReady(1), true);
 });
 
 test('EMAIndicator - compare with manual calculation', () => {

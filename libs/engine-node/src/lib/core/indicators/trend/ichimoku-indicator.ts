@@ -101,19 +101,24 @@ export class IchimokuSenkouSpanBIndicator extends AbstractIndicator<Decimal> {
 }
 
 /**
- * Chikou Span — close, сдвинутый назад: для текущего индекса возвращает
- * close через `offset` баров. Полезно для подтверждения тренда задним числом.
+ * Chikou Span — безопасный для стратегии запаздывающий close: на индексе `i`
+ * возвращает close с индекса `i - offset`. Графики обычно рисуют текущий close
+ * на `offset` баров назад, но чтение будущего close на историческом индексе
+ * создало бы lookahead bias.
  */
 export class IchimokuChikouSpanIndicator extends AbstractIndicator<Decimal> {
   private readonly _offset: number;
 
   constructor(series: BarSeries, offset = 26) {
     super(series, `IchimokuChikou(${offset})`);
+    if (!Number.isInteger(offset) || offset < 0) {
+      throw new Error('offset must be a non-negative integer');
+    }
     this._offset = offset;
   }
 
   protected calculate(index: number): Decimal {
-    const target = index + this._offset;
+    const target = index - this._offset;
     const series = this.getSeries();
     if (!series.isValidIndex(target)) return NaNValue;
     return this.getClosePrice(target);

@@ -14,6 +14,7 @@ import {
   StochasticOscillatorDIndicator,
 } from '../momentum/stochastic-indicator';
 import { ADXIndicator, PlusDIIndicator, MinusDIIndicator } from '../trend/directional-movement';
+import { RSIIndicator } from '../momentum/rsi-indicator';
 import { isNaNValue } from '../nan';
 
 function makeOHLC(rows: number[][]): BarSeries {
@@ -82,6 +83,24 @@ test('Stochastic %K in [0, 100]', () => {
   assert.equal(d.isReady(4), true);
 });
 
+test('Stochastic %D stays not-ready without throwing through %K warm-up', () => {
+  const series = makeOHLC([
+    [10, 12, 9, 11],
+    [11, 13, 10, 12],
+    [12, 14, 11, 13],
+    [13, 15, 12, 14],
+    [14, 16, 13, 15],
+  ]);
+  const d = new StochasticOscillatorDIndicator(new StochasticOscillatorKIndicator(series, 3), 3);
+
+  for (let index = 0; index < 4; index++) {
+    assert.doesNotThrow(() => d.isReady(index));
+    assert.equal(d.isReady(index), false);
+  }
+  assert.equal(d.isReady(4), true);
+  assert.equal(d.getValue(4).toString(), '80');
+});
+
 test('ADX + DI components ready and non-negative', () => {
   const series = makeOHLC(
     Array.from({ length: 60 }, (_, i) => {
@@ -96,4 +115,42 @@ test('ADX + DI components ready and non-negative', () => {
   assert.equal(adx.isReady(last), true);
   assert.equal(plus.getValue(last).isGreaterThanOrEqual(new Decimal('0')), true);
   assert.equal(minus.getValue(last).isGreaterThanOrEqual(new Decimal('0')), true);
+});
+
+test('ADX(3) seeds from three valid DX values', () => {
+  const series = makeOHLC(
+    Array.from({ length: 7 }, (_, i) => {
+      const base = 10 + i;
+      return [base, base + 1, base - 1, base + 0.5];
+    })
+  );
+  const adx = new ADXIndicator(series, 3);
+
+  for (let index = 0; index < 4; index++) {
+    assert.equal(adx.isReady(index), false, `index ${index}`);
+  }
+  assert.equal(adx.isReady(4), true);
+  assert.equal(adx.getValue(4).toString(), '100');
+});
+
+test('RSI and ADX Wilder readiness is relative to non-zero beginIndex', () => {
+  const source = makeOHLC(
+    Array.from({ length: 7 }, (_, i) => {
+      const base = 10 + i;
+      return [base, base + 1, base - 1, base + 0.5];
+    })
+  );
+  const series = new BarSeries({ name: 'Evicted', maxCapacity: 5 }, []);
+  for (const bar of source.getAllBars()) {
+    series.addBar(bar);
+  }
+  assert.equal(series.beginIndex, 2);
+
+  const rsi = new RSIIndicator(series, 3);
+  assert.equal(rsi.isReady(4), false);
+  assert.equal(rsi.isReady(5), true);
+
+  const adx = new ADXIndicator(series, 3);
+  assert.equal(adx.isReady(5), false);
+  assert.equal(adx.isReady(6), true);
 });

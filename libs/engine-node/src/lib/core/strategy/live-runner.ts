@@ -38,6 +38,7 @@ export interface OrderIntent {
 }
 
 export interface LiveStrategyRunnerOptions {
+  /** Явный тип позиции. При конфликте с `record.positionType` конструктор бросает ошибку. */
   positionType?: PositionType;
   positionSizer?: PositionSizer;
   /** Стартовый капитал для %-сайзеров. Default = 0. */
@@ -61,10 +62,17 @@ export class LiveStrategyRunner {
   private readonly _positionType: PositionType;
 
   constructor(series: BarSeries, strategy: Strategy, options?: LiveStrategyRunnerOptions) {
+    const explicitPositionType = options?.positionType;
+    const record = options?.record;
+    if (explicitPositionType && record && explicitPositionType !== record.positionType) {
+      throw new Error('positionType does not match record.positionType');
+    }
+    const positionType = explicitPositionType ?? record?.positionType ?? PositionType.LONG;
+
     this._series = series;
     this._strategy = strategy;
-    this._positionType = options?.positionType ?? PositionType.LONG;
-    this._record = options?.record ?? new TradingRecord(this._positionType);
+    this._positionType = positionType;
+    this._record = record ?? new TradingRecord(positionType);
     this._sizer = options?.positionSizer ?? new FixedQuantitySizer(new Decimal('1'));
     this._initialEquity = options?.initialEquity ?? new Decimal('0');
     this._orderType = options?.orderType ?? 'market';
@@ -89,7 +97,7 @@ export class LiveStrategyRunner {
     this._series.addBar(bar);
     const index = this._series.endIndex;
 
-    if (index < this._strategy.getUnstableBars()) return null;
+    if (index < this._series.beginIndex + this._strategy.getUnstableBars()) return null;
     if (!this._strategy.shouldOperate(index, this._record)) return null;
 
     const isLong = this._positionType === PositionType.LONG;

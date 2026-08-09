@@ -43,14 +43,15 @@ export interface Indicator<T = Decimal> {
  * Абстрактный базовый класс для индикаторов
  *
  * Предоставляет общую функциональность:
- * - Кэширование значений
-   - Валидация индексов
+ * - Кэширование значений с автоматическим сбросом после `BarSeries.clear/setBars`
+ * - Валидация индексов
  * - Поддержка серии баров
  */
 export abstract class AbstractIndicator<T = Decimal> implements Indicator<T> {
   protected readonly _series: BarSeries;
   private readonly _name: string;
   private readonly _cache: Map<number, T>;
+  private _seriesRevision: number;
 
   /**
    * Создаёт новый индикатор
@@ -61,23 +62,29 @@ export abstract class AbstractIndicator<T = Decimal> implements Indicator<T> {
     this._series = series;
     this._name = name;
     this._cache = new Map();
+    this._seriesRevision = series.revision;
   }
 
   /**
    * @inheritDoc
    */
   getValue(index: number): T {
+    if (this._seriesRevision !== this._series.revision) {
+      this.clearCache();
+      this._seriesRevision = this._series.revision;
+    }
+
+    // Проверяем валидность до кэша: вытесненный индекс больше не существует.
+    if (!this._series.isValidIndex(index)) {
+      return NaNValue as unknown as T;
+    }
+
     // Проверяем кэш
     if (this._cache.has(index)) {
       const cached = this._cache.get(index);
       if (cached !== undefined) {
         return cached;
       }
-    }
-
-    // Проверяем валидность индекса — возвращаем NaN-сентинель вместо броска
-    if (!this._series.isValidIndex(index)) {
-      return NaNValue as unknown as T;
     }
 
     // Вычисляем значение

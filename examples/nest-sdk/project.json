@@ -36,6 +36,12 @@
     },
     "test": {
       "executor": "nx:run-commands",
+      "dependsOn": [
+        {
+          "projects": ["grpc-node-client"],
+          "target": "generate"
+        }
+      ],
       "options": {
         "command": "node --import tsx --test examples/nest-sdk/src/backtest/live/*.test.ts"
       }

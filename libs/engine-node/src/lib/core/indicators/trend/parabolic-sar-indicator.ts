@@ -29,6 +29,11 @@ export class ParabolicSARIndicator extends AbstractIndicator<Decimal> {
     this._accMax = new Decimal(accMax.toString());
   }
 
+  clearCache(): void {
+    super.clearCache();
+    this._state.clear();
+  }
+
   protected calculate(index: number): Decimal {
     const series = this.getSeries();
     if (index === series.beginIndex) {

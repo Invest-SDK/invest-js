@@ -13,18 +13,22 @@ import { BarSeries } from '../../bar/bar-series';
 import { ClosePriceIndicator } from '../../indicators/price-indicators';
 import { SMAIndicator } from '../../indicators/moving-average-indicators';
 import { CrossedUpIndicatorRule, CrossedDownIndicatorRule } from '../../rules/comparison-rules';
+import { FixedRule } from '../../rules/boolean-rules';
+import { StopLossRule, TrailingStopRule } from '../../rules/trading-rules';
+import { FixedBpsSlippageModel } from '../../slippage/slippage-model';
+import { FixedTransactionCostModel } from '../../cost/cost-model';
 import { BaseStrategy } from '../strategy';
 import { BarSeriesManager } from '../bar-series-manager';
 import { PositionType } from '../../trading/trading-record';
 
-/** Build a Bar with close = open = high = low for simplicity */
-function makeBar(close: number, t: number): Bar {
+/** Build a Bar with optional range; defaults to close = open = high = low. */
+function makeBar(close: number, t: number, low = close, high = close): Bar {
   const p = new Decimal(close.toString());
   return new Bar({
     time: new Date(t * 1000),
     open: p,
-    high: p,
-    low: p,
+    high: new Decimal(high.toString()),
+    low: new Decimal(low.toString()),
     close: p,
     volume: new Decimal('100'),
   });
@@ -163,4 +167,88 @@ test('BarSeriesManager - getSeries returns the original series', () => {
   const series = buildSeries();
   const mgr = new BarSeriesManager(series);
   assert.strictEqual(mgr.getSeries(), series);
+});
+
+test('BarSeriesManager - intrabar stop breach cannot close at a profitable close', () => {
+  const series = new BarSeries({ name: 'stop-recovery' }, [
+    makeBar(100, 1),
+    makeBar(105, 2, 90, 110),
+  ]);
+  const strategy = new BaseStrategy(
+    'stop-recovery',
+    new FixedRule(0),
+    new StopLossRule(series, new Decimal('5'))
+  );
+
+  const record = new BarSeriesManager(series).run(strategy);
+
+  assert.strictEqual(
+    record.getNetProfit().toString(),
+    '0',
+    `intrabar breach must not close at +5; got ${record.getNetProfit().toString()}`
+  );
+  assert.strictEqual(record.isOpened(), true);
+  assert.strictEqual(record.positionCount, 0);
+});
+
+test('BarSeriesManager - stop exit keeps close slippage and commission models', () => {
+  const series = new BarSeries({ name: 'stop-execution' }, [makeBar(100, 1), makeBar(95, 2)]);
+  const strategy = new BaseStrategy(
+    'stop-execution',
+    new FixedRule(0),
+    new StopLossRule(series, new Decimal('5'))
+  );
+
+  const record = new BarSeriesManager(series).run(strategy, {
+    slippageModel: new FixedBpsSlippageModel(new Decimal('100')),
+    transactionCostModel: new FixedTransactionCostModel(new Decimal('1')),
+  });
+  const position = record.positions[0];
+
+  assert.ok(position);
+  assert.strictEqual(position.getEntryPrice().toString(), '101');
+  assert.strictEqual(position.getExitPrice()?.toString(), '94.05');
+  assert.strictEqual(position.getEntry().getCommission().toString(), '1');
+  assert.strictEqual(position.getExitTrade()?.getCommission().toString(), '1');
+  assert.strictEqual(position.getProfit().toString(), '-8.95');
+});
+
+test('BarSeriesManager - trailing stop preserves the entry-bar high watermark', () => {
+  const series = new BarSeries({ name: 'trailing-entry-high' }, [
+    makeBar(100, 1, 100, 200),
+    makeBar(185, 2),
+    makeBar(180, 3),
+  ]);
+  const strategy = new BaseStrategy(
+    'trailing-entry-high',
+    new FixedRule(0),
+    new TrailingStopRule(series, new Decimal('10'))
+  );
+
+  const record = new BarSeriesManager(series).run(strategy);
+
+  assert.strictEqual(record.positionCount, 1);
+  assert.strictEqual(record.positions[0]?.getExitIndex(), 2);
+});
+
+test('BarSeriesManager - startIndex reuses available warm-up history', () => {
+  const series = buildSeries();
+  const strategy = new BaseStrategy('range', new FixedRule(10), new FixedRule(), 5);
+
+  const record = new BarSeriesManager(series).run(strategy, { startIndex: 10, endIndex: 10 });
+
+  assert.strictEqual(record.currentTrade?.getIndex(), 10);
+});
+
+test('BarSeriesManager - evicted history still delays signals from beginIndex', () => {
+  const series = new BarSeries({ name: 'evicted', maxCapacity: 6 }, []);
+  for (let index = 0; index <= 15; index++) {
+    series.addBar(makeBar(100 + index, index + 1));
+  }
+  assert.strictEqual(series.beginIndex, 10);
+  const strategy = new BaseStrategy('range', new FixedRule(10, 15), new FixedRule(), 5);
+
+  const record = new BarSeriesManager(series).run(strategy);
+
+  assert.strictEqual(record.currentTrade?.getIndex(), 15);
 });

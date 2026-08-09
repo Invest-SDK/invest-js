@@ -296,6 +296,23 @@ test('BarSeries - setBars method', () => {
   assert.strictEqual(series.getBar(1)?.close.toString(), '115');
 });
 
+test('BarSeries - revision changes only on destructive reset', () => {
+  const bars = [
+    createTestBar(new Date('2023-01-01'), 100, 110, 90, 105, 1000),
+    createTestBar(new Date('2023-01-02'), 105, 115, 95, 110, 1200),
+  ];
+  const series = new BarSeries({ name: 'TestSeries' }, bars);
+
+  assert.strictEqual(series.revision, 0);
+  series.addBar(createTestBar(new Date('2023-01-03'), 110, 120, 100, 115, 1300));
+  series.removeBar(0);
+  assert.strictEqual(series.revision, 0);
+  series.clear();
+  assert.strictEqual(series.revision, 1);
+  series.setBars(bars);
+  assert.strictEqual(series.revision, 2);
+});
+
 test('BarSeries - getLastClose method', () => {
   const bars = [
     createTestBar(new Date('2023-01-01'), 100, 110, 90, 105, 1000),
