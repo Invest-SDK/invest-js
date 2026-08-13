@@ -124,6 +124,24 @@ Live-пример работает в sandbox и показывает полны
 `--warmup-bars`, `--dry-run`, `--force-entry-after`, `--force-exit-after` и
 `--max-orders`.
 
+## Продакшен-режим
+
+Для переключения из sandbox в продакшен-режим замените хост и токен в `.env`:
+
+```dotenv
+# Продакшен API
+INVEST_API_HOST=invest-public-api.tbank.ru:443
+INVEST_API_TOKEN=<production-token>
+
+# Уберите или закомментируйте INVEST_SANDBOX_ACCOUNT_ID
+# INVEST_SANDBOX_ACCOUNT_ID=<account-id>
+```
+
+**Важно:**
+- Sandbox-токен не работает с продакшен-API и наоборот
+- Без `INVEST_SANDBOX_ACCOUNT_ID` SDK использует счёт по умолчанию из токена
+- Все заявки в продакшене являются реальными и исполняются на бирже
+
 ## Сборка
 
 ```bash
