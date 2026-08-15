@@ -142,8 +142,10 @@ export type {
 export type {
   InstrumentsRequest,
   SharesResponse,
+  BondResponse,
   EtfsResponse,
   BondsResponse,
+  FutureResponse,
   FuturesResponse,
   OptionsResponse,
   AssetsResponse,

@@ -18,6 +18,12 @@
     },
     "test": {
       "executor": "nx:run-script",
+      "dependsOn": [
+        {
+          "projects": ["grpc-node-client"],
+          "target": "generate"
+        }
+      ],
       "options": {
         "script": "test"
       }
