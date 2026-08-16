@@ -12,6 +12,9 @@
   "main": "index.js",
   "module": "index.js",
   "types": "src/index.d.ts",
+  "dependencies": {
+    "@ttech-pub/invest-core": "0.0.0-stub"
+  },
   "peerDependencies": {
     "nice-grpc-web": "^3.3.7"
   },

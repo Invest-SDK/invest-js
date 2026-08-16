@@ -9,6 +9,9 @@ export interface TTechAPIClientOptions {
   token: string;
   url?: string;
   metadata?: Record<string, string>;
+  cache?: {
+    instruments?: boolean;
+  };
 }
 export declare class WebApiClient {
   instruments: InstrumentsServiceClient;

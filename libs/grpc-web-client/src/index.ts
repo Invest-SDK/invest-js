@@ -23,11 +23,15 @@ import { StopOrdersServiceClient, StopOrdersServiceDefinition } from '../compile
 import { SandboxServiceClient, SandboxServiceDefinition } from '../compiled/sandbox';
 import { UsersServiceClient, UsersServiceDefinition } from '../compiled/users';
 import { createMetadata } from './metadata';
+import { createResponseCacheMiddleware } from './instruments-cache';
 
 export interface TTechAPIClientOptions {
   token: string;
   url?: string;
   metadata?: Record<string, string>;
+  cache?: {
+    instruments?: boolean;
+  };
 }
 
 export class WebApiClient {
@@ -49,12 +53,15 @@ export class WebApiClient {
 
     // const providedMetadata = config.metadata || {};
 
-    const clientFactory = createClientFactory().use((call, options) =>
+    let clientFactory = createClientFactory().use((call, options) =>
       call.next(call.request, {
         ...options,
         metadata: createMetadata(options.metadata, token),
       })
     );
+    if (config.cache?.instruments !== false) {
+      clientFactory = clientFactory.use(createResponseCacheMiddleware());
+    }
 
     const channel = createChannel(url);
 

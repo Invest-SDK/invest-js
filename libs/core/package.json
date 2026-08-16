@@ -9,6 +9,7 @@
   "module": "./src/index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
+    "@isaacs/ttlcache": "^2.1.1",
     "@swc/helpers": "~0.5.11",
     "big.js": "7.0.1"
   },

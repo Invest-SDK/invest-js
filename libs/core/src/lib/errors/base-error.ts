@@ -42,7 +42,9 @@ export abstract class BaseError extends Error {
     correlationId?: string
   ) {
     super(message);
-    Error.captureStackTrace(this, this.constructor);
+    if ('captureStackTrace' in Error && typeof Error.captureStackTrace === 'function') {
+      Error.captureStackTrace(this, this.constructor);
+    }
     this.correlationId = correlationId;
     this.name = this.constructor.name;
   }
