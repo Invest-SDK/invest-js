@@ -9,9 +9,10 @@ import { InvestNodeSDK } from '@ttech-pub/invest-sdk-node';
     {
       provide: INVEST_SDK_CLIENT,
       useFactory: (configService: ConfigService) => {
-        return new InvestNodeSDK({
+        return InvestNodeSDK.create({
           url: configService.getOrThrow<string>('host'),
           token: configService.getOrThrow<string>('token'),
+          useMincifryCertificate: true,
         });
       },
       inject: [ConfigService],

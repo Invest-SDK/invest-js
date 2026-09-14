@@ -117,7 +117,11 @@ async function main(): Promise<void> {
     console.error('INVEST_API_TOKEN missing');
     process.exit(1);
   }
-  const sdk = new InvestNodeSDK({ token, url: process.env.INVEST_API_HOST });
+  const sdk = await InvestNodeSDK.create({
+    token,
+    url: process.env.INVEST_API_HOST,
+    useMincifryCertificate: true,
+  });
   const resolver = new InstrumentsResolver(sdk);
   const loader = new CandlesLoader(sdk);
 

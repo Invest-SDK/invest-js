@@ -160,7 +160,7 @@ async function main(): Promise<void> {
       );
       process.exit(1);
     }
-    sdk = new InvestNodeSDK({ token, url });
+    sdk = await InvestNodeSDK.create({ token, url, useMincifryCertificate: true });
     resolver = new InstrumentsResolver(sdk);
     loader = new CandlesLoader(sdk);
   }

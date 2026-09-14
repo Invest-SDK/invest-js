@@ -431,7 +431,8 @@ test('cached responses expire after the fixed TTL', async () => {
   assert.equal(downstream.calls, 2);
 });
 
-test('NodeApiClient enables response cache by default and supports opt-out', async () => {
+test('NodeApiClient enables response cache by default and supports opt-out', async (t) => {
+  t.mock.method(globalThis, 'fetch', async () => new Response(null, { status: 503 }));
   type FakeFactory = {
     use(middleware: unknown): FakeFactory;
     create(definition: unknown, channel: unknown): object;
@@ -471,7 +472,7 @@ test('NodeApiClient enables response cache by default and supports opt-out', asy
     const { NodeApiClient } = await import('../index');
     const client = new NodeApiClient({ token: 'token' });
 
-    assert.equal(used.length, 2);
+    assert.equal(used.length, 3, 'response cache and ErrorHub are enabled by default');
     assert.ok(finalFactory);
     assert.equal(created.length, 10);
     for (const entry of created) {
@@ -487,10 +488,24 @@ test('NodeApiClient enables response cache by default and supports opt-out', asy
       token: 'token',
       cache: { instruments: false },
     });
-    assert.equal(used.length, 1);
+    assert.equal(used.length, 2, 'ErrorHub remains enabled when response cache is disabled');
     assert.ok(finalFactory);
     assert.equal(created.length, 10);
     assert.strictEqual(uncachedClient.instruments, created[0]?.client);
+
+    used.length = 0;
+    created.length = 0;
+    new NodeApiClient({ token: 'token', telemetry: 'enabled' });
+    assert.equal(used.length, 3, 'explicit ErrorHub enable matches default middleware count');
+
+    used.length = 0;
+    created.length = 0;
+    new NodeApiClient({ token: 'token', cache: { instruments: false }, telemetry: 'disabled' });
+    assert.equal(used.length, 1, 'disabled ErrorHub adds no middleware');
+    assert.throws(() => new NodeApiClient({ token: 'token', telemetry: false as never }), {
+      name: 'TypeError',
+      message: 'telemetry must be "enabled" or "disabled"',
+    });
   } finally {
     factoryModule.createClientFactory = originalFactory;
     channelModule.createChannel = originalChannel;

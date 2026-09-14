@@ -471,7 +471,7 @@ test('WebApiClient enables response cache by default and supports opt-out', asyn
     const { WebApiClient } = await import('../index');
     const client = new WebApiClient({ token: 'token' });
 
-    assert.equal(used.length, 2);
+    assert.equal(used.length, 3, 'response cache and ErrorHub are enabled by default');
     assert.ok(finalFactory);
     assert.equal(created.length, 10);
     for (const entry of created) {
@@ -487,10 +487,34 @@ test('WebApiClient enables response cache by default and supports opt-out', asyn
       token: 'token',
       cache: { instruments: false },
     });
-    assert.equal(used.length, 1);
+    assert.equal(used.length, 2, 'ErrorHub remains enabled when response cache is disabled');
     assert.ok(finalFactory);
     assert.equal(created.length, 10);
     assert.strictEqual(uncachedClient.instruments, created[0]?.client);
+
+    used.length = 0;
+    created.length = 0;
+    finalFactory = undefined;
+
+    new WebApiClient({ token: 'token', telemetry: 'enabled' });
+    assert.equal(used.length, 3, 'explicit ErrorHub enable matches default middleware');
+
+    used.length = 0;
+    created.length = 0;
+    finalFactory = undefined;
+
+    new WebApiClient({
+      token: 'token',
+      cache: { instruments: false },
+      telemetry: 'disabled',
+    });
+    assert.equal(used.length, 1, 'disabled ErrorHub adds no middleware');
+    for (const telemetry of [true, false, null, 'yes', {}]) {
+      assert.throws(() => new WebApiClient({ token: 'token', telemetry: telemetry as never }), {
+        name: 'TypeError',
+        message: 'telemetry must be "enabled" or "disabled"',
+      });
+    }
   } finally {
     factoryModule.createClientFactory = originalFactory;
     channelModule.createChannel = originalChannel;

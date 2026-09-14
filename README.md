@@ -56,6 +56,13 @@ export NODE_EXTRA_CA_CERTS="$HOME/ca-certificates/russiantrustedca.pem"
 другого внутреннего PEM-файла замените путь в `NODE_EXTRA_CA_CERTS`. Не
 отключайте проверку TLS через `NODE_TLS_REJECT_UNAUTHORIZED=0`.
 
+## ErrorHub
+
+ErrorHub помогает разработчикам SDK находить и исправлять сбои stream-соединений. В Node.js и Web
+диагностика включена по умолчанию (`telemetry: "enabled"`), чувствительные данные перед отправкой
+маскируются. Чтобы отключить её, передайте `telemetry: "disabled"`; в Web при этом библиотека
+ErrorHub не загружается.
+
 ## Примеры
 
 Каждый пример находится в отдельной директории с инструкцией запуска:
@@ -89,7 +96,7 @@ Live-пример работает в sandbox и показывает полны
 1. Создайте `examples/nest-sdk/.env`:
 
    ```dotenv
-   INVEST_API_HOST=sandbox-invest-public-api.tinkoff.ru:443
+   INVEST_API_HOST=sandbox-invest-public-api.tbank.ru:443
    INVEST_API_TOKEN=<sandbox-token>
    # необязательно: иначе пример выберет или создаст sandbox-счёт
    INVEST_SANDBOX_ACCOUNT_ID=<account-id>
@@ -138,6 +145,7 @@ INVEST_API_TOKEN=<production-token>
 ```
 
 **Важно:**
+
 - Sandbox-токен не работает с продакшен-API и наоборот
 - Без `INVEST_SANDBOX_ACCOUNT_ID` SDK использует счёт по умолчанию из токена
 - Все заявки в продакшене являются реальными и исполняются на бирже

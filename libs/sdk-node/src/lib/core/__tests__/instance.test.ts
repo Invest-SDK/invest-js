@@ -1,5 +1,6 @@
-import { describe, test } from 'node:test';
+import { after, before, describe, mock, test } from 'node:test';
 import assert from 'node:assert';
+import { NodeApiClient } from '@ttech-pub/grpc-node-client';
 import { InvestNodeSDK } from '../instance';
 import { APIService, BaseCommand } from '../shared';
 
@@ -13,11 +14,23 @@ class MockCommand extends BaseCommand<void, string> {
   }
 }
 
+class ClientCommand extends BaseCommand<void, APIService> {
+  public override call(client: APIService): APIService {
+    return client;
+  }
+}
+
 describe('Instance', () => {
+  before(() => {
+    mock.method(globalThis, 'fetch', async () => new Response(null, { status: 503 }));
+  });
+  after(() => mock.restoreAll());
+
   test('InvestNodeSDK должен успешно создаться с валидным токеном', () => {
-    const options = { token: 'valid-token' };
+    const options = { token: 'valid-token', telemetry: 'enabled' } as const;
     const sdk = new InvestNodeSDK(options);
     assert.ok(sdk instanceof InvestNodeSDK);
+    assert.ok(sdk.send(new ClientCommand()) instanceof NodeApiClient);
   });
 
   test('InvestNodeSDK должен выбросить EmptyTokenError при пустом токене', () => {
@@ -46,5 +59,26 @@ describe('Instance', () => {
   test('InvestNodeSDK.create должен успешно создаться с валидным токеном', async () => {
     const sdk = await InvestNodeSDK.create({ token: 'valid-token' });
     assert.ok(sdk instanceof InvestNodeSDK);
+  });
+
+  test('InvestNodeSDK.create passes telemetry once and reuses created client', async () => {
+    const originalCreate = NodeApiClient.create;
+    const expectedClient = {} as NodeApiClient;
+    const options = { token: 'valid-token', telemetry: 'disabled' } as const;
+    let calls = 0;
+    let received: unknown;
+    NodeApiClient.create = async (candidate) => {
+      calls += 1;
+      received = candidate;
+      return expectedClient;
+    };
+    try {
+      const sdk = await InvestNodeSDK.create(options);
+      assert.equal(calls, 1);
+      assert.strictEqual(received, options);
+      assert.strictEqual(sdk.send(new ClientCommand()), expectedClient);
+    } finally {
+      NodeApiClient.create = originalCreate;
+    }
   });
 });

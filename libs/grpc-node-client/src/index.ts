@@ -24,6 +24,7 @@ import { SandboxServiceClient, SandboxServiceDefinition } from '../compiled/sand
 import { downloadMincifryCertificate } from './mincifry-certificate';
 import { createMetadata } from './metadata';
 import { createResponseCacheMiddleware } from './instruments-cache';
+import { createConfiguredErrorHubMiddleware } from './error-hub';
 
 export interface TTechAPIClientOptions {
   token: string;
@@ -33,7 +34,11 @@ export interface TTechAPIClientOptions {
     instruments?: boolean;
   };
   useMincifryCertificate?: boolean;
+  /** Stream diagnostics are enabled by default. */
+  telemetry?: 'enabled' | 'disabled';
 }
+
+const DEFAULT_URL = 'https://invest-public-api.tbank.ru';
 
 export class NodeApiClient {
   instruments: InstrumentsServiceClient;
@@ -59,9 +64,16 @@ export class NodeApiClient {
     if (config.useMincifryCertificate && !rootCerts) {
       throw new Error('useMincifryCertificate requires await NodeApiClient.create(options)');
     }
+    if (
+      config.telemetry !== undefined &&
+      config.telemetry !== 'enabled' &&
+      config.telemetry !== 'disabled'
+    ) {
+      throw new TypeError('telemetry must be "enabled" or "disabled"');
+    }
 
     const token = config.token;
-    const url = config.url || 'https://invest-public-api.tinkoff.ru';
+    const url = config.url || DEFAULT_URL;
 
     // const providedMetadata = config.metadata || {};
 
@@ -73,6 +85,13 @@ export class NodeApiClient {
     );
     if (config.cache?.instruments !== false) {
       clientFactory = clientFactory.use(createResponseCacheMiddleware());
+    }
+
+    const errorHubMiddleware = createConfiguredErrorHubMiddleware(config.telemetry, url);
+    if (errorHubMiddleware) {
+      // Attach last: nice-grpc invokes newest middleware first. This keeps auth
+      // metadata in the inner middleware, outside ErrorHub's boundary.
+      clientFactory = clientFactory.use(errorHubMiddleware);
     }
 
     const channel = createChannel(url, ChannelCredentials.createSsl(rootCerts));

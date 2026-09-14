@@ -15,7 +15,7 @@
  *
  * Требует в examples/nest-sdk/.env:
  *   INVEST_API_TOKEN=...
- *   INVEST_API_HOST=https://invest-public-api.tinkoff.ru:443  (опц.)
+ *   INVEST_API_HOST=https://invest-public-api.tbank.ru:443  (опц.)
  *   INVEST_SANDBOX_ACCOUNT_ID=...  (опц. — иначе создадим новый)
  */
 
@@ -117,7 +117,7 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const sdk = new InvestNodeSDK({ token, url: host });
+  const sdk = await InvestNodeSDK.create({ token, url: host, useMincifryCertificate: true });
   log(
     'boot',
     `mode=${args.dryRun ? 'DRY-RUN' : 'LIVE'} dur=${args.durationSec}s warmup=${args.warmupBars}`

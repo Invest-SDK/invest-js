@@ -34,6 +34,9 @@
         "tsConfig": "libs/grpc-web-client/tsconfig.lib.json",
         "assets": ["libs/grpc-web-client/*.md"],
         "format": ["esm"],
+        "esbuildOptions": {
+          "splitting": true
+        },
         "platform": "browser",
         "minify": true,
         "external": ["nice-grpc-web"]

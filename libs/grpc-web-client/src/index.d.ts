@@ -12,6 +12,8 @@ export interface TTechAPIClientOptions {
   cache?: {
     instruments?: boolean;
   };
+  /** Stream diagnostics are enabled by default. */
+  telemetry?: 'enabled' | 'disabled';
 }
 export declare class WebApiClient {
   instruments: InstrumentsServiceClient;

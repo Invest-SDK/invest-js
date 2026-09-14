@@ -8,6 +8,7 @@ export default [
       '@nx/dependency-checks': [
         'error',
         {
+          ignoredDependencies: ['@sentry/browser'],
           ignoredFiles: [
             '{projectRoot}/esbuild.config.{js,ts,mjs,mts}',
             '{projectRoot}/eslint.config.{js,cjs,mjs}',

@@ -1,7 +1,20 @@
 # grpc-node-client
 
-This library was generated with [Nx](https://nx.dev).
+Эта библиотека создана с помощью [Nx](https://nx.dev).
 
-## Building
+## Сборка
 
-Run `nx build grpc-node-client` to build the library.
+Чтобы собрать библиотеку, выполните `nx build grpc-node-client`.
+
+## ErrorHub
+
+ErrorHub помогает разработчикам SDK находить и исправлять сбои stream-соединений. Диагностика
+включена по умолчанию (`telemetry: "enabled"`); чтобы отключить её, передайте `telemetry: "disabled"`.
+
+При создании клиента ErrorHub автоматически загружает сертификат УЦ Минцифры через тот же
+кэш, что и `useMincifryCertificate`. Для HTTPS-запросов ErrorHub он добавляется к стандартным
+доверенным УЦ Node.js: сертификаты Let’s Encrypt продолжают работать. Глобальные настройки TLS
+не меняются. Отправка диагностики ждёт загрузки (до 5 секунд); при ошибке используются стандартные
+УЦ. Создание клиента и запросы Invest API не ждут загрузки ErrorHub.
+
+Это поведение относится к Node.js. В браузере доверенные УЦ настраиваются в браузере или ОС.

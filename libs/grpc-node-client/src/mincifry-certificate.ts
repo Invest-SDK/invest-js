@@ -4,7 +4,7 @@ import { singleFlight } from './shared/single-flight';
 export const MINCIFRY_CERTIFICATE_URL = 'https://gu-st.ru/content/lending/russiantrustedca.zip';
 
 export const downloadMincifryCertificate = singleFlight(async (): Promise<Buffer> => {
-  const response = await fetch(MINCIFRY_CERTIFICATE_URL);
+  const response = await fetch(MINCIFRY_CERTIFICATE_URL, { signal: AbortSignal.timeout(5_000) });
 
   if (!response.ok) {
     throw new Error(

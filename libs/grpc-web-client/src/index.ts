@@ -24,6 +24,7 @@ import { SandboxServiceClient, SandboxServiceDefinition } from '../compiled/sand
 import { UsersServiceClient, UsersServiceDefinition } from '../compiled/users';
 import { createMetadata } from './metadata';
 import { createResponseCacheMiddleware } from './instruments-cache';
+import { createLazyErrorHubMiddleware } from './error-hub-lazy';
 
 export interface TTechAPIClientOptions {
   token: string;
@@ -32,6 +33,8 @@ export interface TTechAPIClientOptions {
   cache?: {
     instruments?: boolean;
   };
+  /** Stream diagnostics are enabled by default. */
+  telemetry?: 'enabled' | 'disabled';
 }
 
 export class WebApiClient {
@@ -48,8 +51,15 @@ export class WebApiClient {
   sandbox: SandboxServiceClient;
 
   constructor(config: TTechAPIClientOptions) {
+    if (
+      config.telemetry !== undefined &&
+      config.telemetry !== 'enabled' &&
+      config.telemetry !== 'disabled'
+    ) {
+      throw new TypeError('telemetry must be "enabled" or "disabled"');
+    }
     const token = config.token;
-    const url = config.url || 'https://invest-public-api.tinkoff.ru';
+    const url = config.url || 'https://invest-public-api.tbank.ru';
 
     // const providedMetadata = config.metadata || {};
 
@@ -61,6 +71,9 @@ export class WebApiClient {
     );
     if (config.cache?.instruments !== false) {
       clientFactory = clientFactory.use(createResponseCacheMiddleware());
+    }
+    if (config.telemetry !== 'disabled') {
+      clientFactory = clientFactory.use(createLazyErrorHubMiddleware(url));
     }
 
     const channel = createChannel(url);
