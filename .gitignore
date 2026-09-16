@@ -26,3 +26,5 @@ ca-bundle.crt
 /.codegraph
 /.nessy
 docs/superpowers
+
+.DS_Store

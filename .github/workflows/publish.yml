@@ -44,6 +44,20 @@ jobs:
         run: rm -f package-lock.json .npmrc
         shell: bash
 
+      - name: Verify npm authentication
+        run: |
+          if [[ -z "${NODE_AUTH_TOKEN:-}" ]]; then
+            echo "::error::Set the NPM_ACCESS_TOKEN repository secret to a granular npm token with read/write access to the @ttech-pub packages."
+            exit 1
+          fi
+          if ! npm whoami --registry=https://registry.npmjs.org/ --fetch-retries=0 > /dev/null; then
+            echo "::error::npm authentication failed. Check NPM_ACCESS_TOKEN validity and the registry error above."
+            exit 1
+          fi
+        shell: bash
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+
       - name: Install dependencies
         run: npm install
         shell: bash
@@ -57,7 +71,17 @@ jobs:
         shell: bash
 
       - name: Publish packages
+        id: publish
         run: npm run publish
         shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+          NPM_CONFIG_LOGS_DIR: ${{ runner.temp }}/npm-publish-logs
+
+      # Nx 20 discards npm stderr, including additional registry diagnostics.
+      - name: Show npm publish diagnostics
+        if: failure() && steps.publish.outcome == 'failure'
+        run: cat "$NPM_CONFIG_LOGS_DIR"/*-debug-*.log
+        shell: bash
+        env:
+          NPM_CONFIG_LOGS_DIR: ${{ runner.temp }}/npm-publish-logs
