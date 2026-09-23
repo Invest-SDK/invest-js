@@ -75,12 +75,10 @@ export class NodeApiClient {
     const token = config.token;
     const url = config.url || DEFAULT_URL;
 
-    // const providedMetadata = config.metadata || {};
-
     let clientFactory = createClientFactory().use((call, options) =>
       call.next(call.request, {
         ...options,
-        metadata: createMetadata(options.metadata, token),
+        metadata: createMetadata(config.metadata, options.metadata, token),
       })
     );
     if (config.cache?.instruments !== false) {
@@ -195,6 +193,7 @@ export type {
   Option,
   Share,
   Etf,
+  Rating,
 } from '../compiled/instruments';
 
 export { OperationState } from '../compiled/operations';

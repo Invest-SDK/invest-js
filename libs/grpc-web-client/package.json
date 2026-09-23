@@ -7,6 +7,12 @@
     "investment",
     "grpc-web"
   ],
+  "homepage": "https://opensource.tbank.ru/invest/invest-js/-/tree/main/libs/grpc-web-client",
+  "repository": {
+    "type": "git",
+    "url": "git+https://opensource.tbank.ru/invest/invest-js.git",
+    "directory": "libs/grpc-web-client"
+  },
   "license": "MIT",
   "type": "module",
   "main": "index.js",

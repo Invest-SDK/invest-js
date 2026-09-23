@@ -63,6 +63,46 @@ ErrorHub помогает разработчикам SDK находить и и�
 маскируются. Чтобы отключить её, передайте `telemetry: "disabled"`; в Web при этом библиотека
 ErrorHub не загружается.
 
+## Конвертация цен облигаций и фьючерсов
+
+`BondsPriceConverter` и `FuturesPriceConverter` есть и в
+`@ttech-pub/invest-sdk-node`, и в `@ttech-pub/invest-sdk-web` — API одинаковый,
+различается только пакет в импорте. Оба принимают либо отдельные коэффициенты
+инструмента, либо целиком `BondResponse` / `FutureResponse`. Формулы описаны в
+[справке Т-Банка](https://developer.tbank.ru/invest/intro/useful-info/points).
+
+Цена облигации в пунктах — это процент от номинала:
+
+```ts
+import { BondsPriceConverter } from '@ttech-pub/invest-sdk-node';
+import { Decimal } from '@ttech-pub/invest-core';
+import type { MoneyValue } from '@ttech-pub/grpc-node-client';
+
+const nominal: MoneyValue = { currency: 'rub', units: 1000, nano: 0 };
+
+BondsPriceConverter.pointsToCurrency(new Decimal('95.5'), nominal).toString(); // '955'
+BondsPriceConverter.currencyToPoints(new Decimal('955'), nominal).toString(); // '95.5'
+```
+
+Для фьючерса пересчёт идёт через `minPriceIncrement` и
+`minPriceIncrementAmount`:
+
+```ts
+import { FuturesPriceConverter } from '@ttech-pub/invest-sdk-node';
+import { Decimal } from '@ttech-pub/invest-core';
+import type { FutureResponse } from '@ttech-pub/grpc-node-client';
+
+declare const response: FutureResponse; // из GetFuturesCommand
+
+FuturesPriceConverter.currencyToPoints(new Decimal('25'), response).toString();
+FuturesPriceConverter.pointsToCurrency(new Decimal('125'), response).toString();
+```
+
+При передаче коэффициентов вручную проверяйте, что они заданы: на `undefined`
+конвертеры бросают `TypeError`, на нулевом делителе —
+`DivisionByZeroDecimalError`. Конвертацию валют, если валюта цены и валюта
+номинала различаются, конвертеры не выполняют.
+
 ## Примеры
 
 Каждый пример находится в отдельной директории с инструкцией запуска:

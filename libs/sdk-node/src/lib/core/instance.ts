@@ -2,9 +2,9 @@ import { NodeApiClient, TTechAPIClientOptions } from '@ttech-pub/grpc-node-clien
 import { BaseCommand } from './shared';
 import { EmptyTokenError } from './instance.errors';
 
-export interface InverstNodeSDKOptions extends TTechAPIClientOptions {}
+export interface InvestNodeSDKOptions extends TTechAPIClientOptions {}
 
-function validateToken(options: InverstNodeSDKOptions): void {
+function validateToken(options: InvestNodeSDKOptions): void {
   if (options.token === null || options.token === undefined || options.token === '') {
     throw new EmptyTokenError('Token is empty');
   }
@@ -13,13 +13,13 @@ function validateToken(options: InverstNodeSDKOptions): void {
 export class InvestNodeSDK {
   #client: NodeApiClient;
 
-  static async create(options: InverstNodeSDKOptions): Promise<InvestNodeSDK> {
+  static async create(options: InvestNodeSDKOptions): Promise<InvestNodeSDK> {
     validateToken(options);
     const client = await NodeApiClient.create(options);
     return new InvestNodeSDK(options, client);
   }
 
-  constructor(options: InverstNodeSDKOptions, client?: NodeApiClient) {
+  constructor(options: InvestNodeSDKOptions, client?: NodeApiClient) {
     validateToken(options);
     this.#client = client ?? new NodeApiClient(options);
   }

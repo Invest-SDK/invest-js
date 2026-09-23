@@ -2,6 +2,12 @@
   "name": "@ttech-pub/grpc-node-client",
   "version": "0.0.0-stub",
   "description": "T-Tech Invest GRPC Node.js API client",
+  "homepage": "https://opensource.tbank.ru/invest/invest-js/-/tree/main/libs/grpc-node-client",
+  "repository": {
+    "type": "git",
+    "url": "git+https://opensource.tbank.ru/invest/invest-js.git",
+    "directory": "libs/grpc-node-client"
+  },
   "license": "MIT",
   "type": "commonjs",
   "main": "./src/index.js",

@@ -97,6 +97,7 @@ export type {
   Option,
   Share,
   Etf,
+  Rating,
 } from '../compiled/instruments';
 export { OperationState } from '../compiled/operations';
 export {

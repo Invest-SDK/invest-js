@@ -1,152 +1,135 @@
-# sdk-node
+# @ttech-pub/invest-sdk-node
 
-Эта библиотека создана с помощью [Nx](https://nx.dev).
+SDK T-Invest API для Node.js. Оборачивает gRPC-клиент в команды с типизированным
+входом и выходом, отдаёт stream-подписки как RxJS-`Observable`, приводит цены к
+`Decimal` и добавляет песочницу.
 
-## Сборка
+Документация проекта: <https://opensource.tbank.ru/invest/invest-js>
 
-Чтобы собрать библиотеку, выполните `nx build sdk-node`.
+## Установка
 
-## ErrorHub
-
-ErrorHub помогает разработчикам SDK находить и исправлять сбои stream-соединений. Диагностика
-включена по умолчанию (`telemetry: "enabled"`); чтобы отключить её, передайте `telemetry: "disabled"`.
-
-## Конвертация цены фьючерса
-
-`FuturesPriceConverter` поддерживает как отдельные коэффициенты из `Future`,
-так и объект `FutureResponse`. Формулы описаны в [справке Т-Банка о стоимости
-шага цены фьючерса](https://developer.tbank.ru/invest/intro/useful-info/points).
-Ниже приведены примеры с фиксированными значениями. Замените их значениями из
-ответа API и перед ручной передачей коэффициентов проверяйте, что они заданы.
-
-```ts
-import { FuturesPriceConverter } from '@ttech-pub/invest-sdk-node';
-import { Decimal } from '@ttech-pub/invest-core';
-import type { Future, FutureResponse, Quotation } from '@ttech-pub/grpc-node-client';
-
-const quotation = (units: number, nano = 0): Quotation => ({ units, nano });
-
-const futureFixture = (minPriceIncrement: Quotation, minPriceIncrementAmount: Quotation): Future =>
-  ({ minPriceIncrement, minPriceIncrementAmount } as Future);
-```
-
-Перевод валюты в пункты с отдельными коэффициентами (`25 * 0.5 / 2.5 = 5`):
-
-```ts
-const future = futureFixture(quotation(0, 500000000), quotation(2, 500000000));
-
-if (!future.minPriceIncrement || !future.minPriceIncrementAmount) {
-  throw new Error('Не заданы коэффициенты фьючерса');
-}
-
-FuturesPriceConverter.currencyToPoints(
-  new Decimal('25'),
-  future.minPriceIncrement,
-  future.minPriceIncrementAmount,
-).toString(); // '5'
-```
-
-Перевод валюты в пункты с типизированным `FutureResponse`:
-
-```ts
-const response: FutureResponse = {
-  instrument: futureFixture(quotation(0, 500000000), quotation(2, 500000000)),
-};
-
-FuturesPriceConverter.currencyToPoints(new Decimal('25'), response).toString(); // '5'
-```
-
-Перевод пунктов в валюту с отдельными коэффициентами (`125 * 12.5 / 10 = 156.25`):
-
-```ts
-const future = futureFixture(quotation(10), quotation(12, 500000000));
-
-if (!future.minPriceIncrement || !future.minPriceIncrementAmount) {
-  throw new Error('Не заданы коэффициенты фьючерса');
-}
-
-FuturesPriceConverter.pointsToCurrency(
-  new Decimal('125'),
-  future.minPriceIncrement,
-  future.minPriceIncrementAmount,
-).toString(); // '156.25'
-```
-
-Перевод пунктов в валюту с типизированным `FutureResponse`:
-
-```ts
-const response: FutureResponse = {
-  instrument: futureFixture(quotation(10), quotation(12, 500000000)),
-};
-
-FuturesPriceConverter.pointsToCurrency(new Decimal('125'), response).toString(); // '156.25'
-```
-
-## Конвертация цены облигации
-
-Пункты цены облигации — это процент от номинала. Формулы:
-
-- цена в пунктах = цена в валюте × 100 / номинал;
-- цена в валюте = цена в пунктах / 100 × номинал.
-
-Описание цен облигаций и фьючерсов приведено в [справке Т-Банка о ценах облигаций и фьючерсов](https://developer.tbank.ru/invest/intro/useful-info/points).
-Помощник не выполняет конвертацию валют, если валюта цены и валюта номинала различаются; такой пересчёт выполняется отдельно.
-
-```ts
-import { BondsPriceConverter } from '@ttech-pub/invest-sdk-node';
-import { Decimal } from '@ttech-pub/invest-core';
-import type { Bond, BondResponse, MoneyValue } from '@ttech-pub/grpc-node-client';
-
-const nominal: MoneyValue = { currency: 'rub', units: 1000, nano: 0 };
-const bond: Bond = { nominal } as Bond;
-const response: BondResponse = { instrument: bond };
-```
-
-Перевод пунктов в валюту с ручным `MoneyValue` (`95.5 / 100 × 1000 = 955`):
-
-```ts
-BondsPriceConverter.pointsToCurrency(new Decimal('95.5'), nominal).toString(); // '955'
-```
-
-Перевод пунктов в валюту с типизированным `BondResponse`:
-
-```ts
-BondsPriceConverter.pointsToCurrency(new Decimal('95.5'), response).toString(); // '955'
-```
-
-Перевод валюты в пункты с ручным `MoneyValue` (`955 × 100 / 1000 = 95.5`):
-
-```ts
-BondsPriceConverter.currencyToPoints(new Decimal('955'), nominal).toString(); // '95.5'
-```
-
-Перевод валюты в пункты с типизированным `BondResponse`:
-
-```ts
-BondsPriceConverter.currencyToPoints(new Decimal('955'), response).toString(); // '95.5'
-```
-
-## Порядок тестирования
-
-Запускайте команды по порядку:
+`@ttech-pub/grpc-node-client` и `@ttech-pub/invest-core` — peer-зависимости:
 
 ```bash
-npx nx test sdk-node
-npx nx build sdk-node
-npx nx lint sdk-node
+npm install @ttech-pub/invest-sdk-node @ttech-pub/invest-core @ttech-pub/grpc-node-client
 ```
 
-## Тест-кейсы
+## Использование
 
-- Ручной `MoneyValue`: перевод пунктов в валюту (`95.5 → 955`) и валюты в пункты (`955 → 95.5`).
-- Типизированный `BondResponse`: те же оба направления.
-- Номинал с `nano`: точный обратный перевод без потери точности.
-- Отсутствуют `instrument`, `nominal` или ручной номинал: `TypeError`.
-- Некорректный номинал: выбрасывается `Error` при создании `Decimal`.
-- Нулевой номинал: `currencyToPoints` выбрасывает `DivisionByZeroDecimalError`, `pointsToCurrency` возвращает `0`.
-- Ручные `Quotation`: перевод валюты в пункты (`25 → 5`) и пунктов в валюту (`125 → 156.25`).
-- Типизированный `FutureResponse`: те же оба направления.
-- Коэффициенты с `nano`: точная конвертация без округления и потери точности.
-- Отсутствуют `instrument`, `minPriceIncrement` или `minPriceIncrementAmount`, а также ручные коэффициенты: `TypeError`.
-- Некорректные ручные коэффициенты: выбрасывается `Error` при создании `Decimal`.
-- Нулевой `minPriceIncrementAmount` в `currencyToPoints` и нулевой `minPriceIncrement` в `pointsToCurrency`: `DivisionByZeroDecimalError`.
+```ts
+import { InvestNodeSDK, GetSharesCommand } from '@ttech-pub/invest-sdk-node';
+import { InstrumentStatus } from '@ttech-pub/grpc-node-client';
+
+const sdk = await InvestNodeSDK.create({ token: process.env.INVEST_API_TOKEN! });
+
+const { instruments } = await sdk.send(
+  new GetSharesCommand({ instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_BASE })
+);
+```
+
+Единственный метод экземпляра — `send(command)`. Он возвращает то, что
+объявила команда: `Promise` для унарных вызовов и `Promise<Observable<...>>`
+для stream-команд.
+
+`InvestNodeSDK.create()` — асинхронная форма. Она обязательна при
+`useMincifryCertificate: true`; синхронный `new InvestNodeSDK(options)` в этом
+случае бросает ошибку. Пустой токен — `EmptyTokenError`.
+
+### `InvestNodeSDKOptions`
+
+Расширяет `TTechAPIClientOptions` из `@ttech-pub/grpc-node-client` без
+изменений:
+
+| Параметр                 | Тип                       | По умолчанию                         | Значение                                                                                                       |
+| ------------------------ | ------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `token`                  | `string`                  | —                                    | Токен T-Invest API. Пустой или отсутствующий — `EmptyTokenError`                                               |
+| `url`                    | `string`                  | `https://invest-public-api.tbank.ru` | Адрес API; для песочницы `https://sandbox-invest-public-api.tbank.ru:443`                                      |
+| `cache.instruments`      | `boolean`                 | `true`                               | Кеш точечных запросов инструментов, TTL 30 минут. Отключается только явным `false`                             |
+| `useMincifryCertificate` | `boolean`                 | `false`                              | Скачать сертификат УЦ Минцифры и использовать как корневой для gRPC-канала. Требует `InvestNodeSDK.create()`   |
+| `telemetry`              | `'enabled' \| 'disabled'` | `'enabled'`                          | Диагностика stream-соединений. Любое другое значение — `TypeError`                                             |
+| `metadata`               | `Record<string, string>`  | —                                    | Добавляются к каждому вызову; per-call метаданные их перекрывают. `Authorization` и `x-app-name` задаёт клиент |
+
+## Потоки
+
+Stream-команды отдают `Observable`, поэтому подписку закрывает RxJS:
+
+```ts
+import { GetMarketdataStreamCommand } from '@ttech-pub/invest-sdk-node';
+import { SubscriptionAction, SubscriptionInterval } from '@ttech-pub/grpc-node-client';
+
+const stream$ = await sdk.send(
+  new GetMarketdataStreamCommand({
+    subscribeCandlesRequest: {
+      subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+      instruments: [
+        {
+          figi: share.figi,
+          instrumentId: share.uid,
+          interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE,
+        },
+      ],
+      waitingClose: true,
+    },
+    subscribeOrderBookRequest: undefined,
+    subscribeTradesRequest: undefined,
+    subscribeInfoRequest: undefined,
+    subscribeLastPriceRequest: undefined,
+    pingSettings: undefined,
+  })
+);
+
+const subscription = stream$.subscribe((item) => console.log(item));
+// subscription.unsubscribe();
+```
+
+Незаданные подписки нужно передавать явным `undefined` — поля запроса
+обязательные.
+
+## Свои команды
+
+`send` принимает любой наследник `BaseCommand<T, S>`: `T` — тип опций,
+`S` — тип результата. В `call` приходит `APIService` — набор gRPC-сервисов
+клиента.
+
+```ts
+import { BaseCommand, APIService } from '@ttech-pub/invest-sdk-node';
+import type { GetAccountsResponse } from '@ttech-pub/grpc-node-client';
+
+class GetAccountsRawCommand extends BaseCommand<
+  Record<string, never>,
+  Promise<GetAccountsResponse>
+> {
+  call(client: APIService): Promise<GetAccountsResponse> {
+    return client.users.getAccounts(this.options);
+  }
+}
+```
+
+## Команды
+
+| Группа          | Команды                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Инструменты     | `GetSharesCommand`, `GetBondsCommand`, `GetETFsCommand`, `GetFuturesCommand`, `GetOptionsCommand`, `GetCurrenciesCommand`, `GetIndicativesCommand`, `GetAssetsCommand`, `GetAllMainInstrumentsCommand`, `GetAssetFundamentalsCommand`, `GetConsensusForecastsCommand`, `GetBondCouponsCommand`, `GetDividendsCommand`, `GetRiskRatesCommand`, `GetTradingSchedulesCommand` |
+| Рыночные данные | `GetCandlesCommand`, `GetOrderBookCommand`, `GetLastTradesCommand`, `GetLastPricesCommand`, `GetClosePricesCommand`, `GetTradingStatusesCommand`, `GetTechAnalysisIndicatorsCommand`, `GetMarketdataStreamCommand`                                                                                                                                                         |
+| Заявки          | `CreateOrderCommand`, `CreateAsyncOrderCommand`, `GetActiveOrdersCommand`, `GetActiveOrdersStreamCommand`, `GetSuccessOrdersStreamCommand`                                                                                                                                                                                                                                 |
+| Портфель        | `GetAccountsCommand`, `GetPositionsCommand`, `GetOperationsCommand`                                                                                                                                                                                                                                                                                                        |
+| Песочница       | `OpenSandboxAccountCommand`, `CloseSandboxAccountCommand`, `GetSandboxAccountsCommand`, `GetSandboxPortfolioCommand`, `GetSandboxPositionsCommand`, `SandboxPayInCommand`, `PostSandboxOrderCommand`                                                                                                                                                                       |
+
+Группа «Песочница» есть только в этом пакете — в `@ttech-pub/invest-sdk-web`
+её нет.
+
+## Конвертация цен
+
+`BondsPriceConverter` и `FuturesPriceConverter` переводят цены между пунктами
+и валютой. Примеры — в
+[README проекта](https://opensource.tbank.ru/invest/invest-js).
+
+## Сертификат Минцифры и ErrorHub
+
+Установка сертификата УЦ Минцифры и управление телеметрией описаны в
+[README проекта](https://opensource.tbank.ru/invest/invest-js).
+
+## Примеры
+
+Бэктест, live-бот и NestJS-приложение:
+[`examples/nest-sdk`](https://opensource.tbank.ru/invest/invest-js/-/tree/main/examples/nest-sdk).

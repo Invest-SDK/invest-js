@@ -61,12 +61,10 @@ export class WebApiClient {
     const token = config.token;
     const url = config.url || 'https://invest-public-api.tbank.ru';
 
-    // const providedMetadata = config.metadata || {};
-
     let clientFactory = createClientFactory().use((call, options) =>
       call.next(call.request, {
         ...options,
-        metadata: createMetadata(options.metadata, token),
+        metadata: createMetadata(config.metadata, options.metadata, token),
       })
     );
     if (config.cache?.instruments !== false) {
@@ -135,7 +133,18 @@ export type {
   PositionsResponse,
   OperationsRequest,
   OperationsResponse,
+  PortfolioRequest,
+  PortfolioResponse,
 } from '../compiled/operations';
+
+export type {
+  OpenSandboxAccountRequest,
+  OpenSandboxAccountResponse,
+  CloseSandboxAccountRequest,
+  CloseSandboxAccountResponse,
+  SandboxPayInRequest,
+  SandboxPayInResponse,
+} from '../compiled/sandbox';
 
 export type {
   InstrumentsRequest,
@@ -167,6 +176,7 @@ export type {
   Option,
   Share,
   Etf,
+  Rating,
 } from '../compiled/instruments';
 
 export { OperationState } from '../compiled/operations';
@@ -186,6 +196,7 @@ export {
   TradeSourceType,
   SubscriptionStatus,
   SubscriptionAction,
+  SubscriptionInterval,
 } from '../compiled/marketdata';
 
 export type {

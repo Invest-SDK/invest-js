@@ -1,38 +1,69 @@
-# T-Tech Invest API grpc-web Typescript library
+# @ttech-pub/grpc-web-client
 
-Provides browser modules with promise api grpc stubs
+Низкоуровневый gRPC-Web-клиент T-Invest API для браузера: сгенерированные из
+[контрактов](https://opensource.tbank.ru/invest/invest-contracts) типы и стабы
+сервисов с promise-API. Авторизация, кеш инструментов и диагностика подключены
+как middleware.
 
-## Install using npm
+Если нужен не сырой gRPC-Web, а команды и RxJS-потоки, берите
+[`@ttech-pub/invest-sdk-web`](https://www.npmjs.com/package/@ttech-pub/invest-sdk-web).
 
+Документация проекта: <https://opensource.tbank.ru/invest/invest-js>
+
+## Установка
+
+`nice-grpc-web` — peer-зависимость, её ставят отдельно:
+
+```bash
+npm install @ttech-pub/grpc-web-client @ttech-pub/invest-core nice-grpc-web
 ```
-npm install @ttech-pub/grpc-web-client --save
+
+## Использование
+
+```ts
+import { WebApiClient, InstrumentStatus } from '@ttech-pub/grpc-web-client';
+
+const client = new WebApiClient({ token: 't.invest.secret-token' });
+
+const shares = await client.instruments.shares({
+  instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_BASE,
+});
 ```
 
-## Usage
+Токен попадает в бандл и виден пользователю — в браузере используйте токен
+только для чтения или проксируйте запросы через свой бэкенд.
 
-```
-import { TTechApiClient } from '@ttech-pub/grpc-web-client'
+### `TTechAPIClientOptions`
 
-const client = new TTechApiClient({ token: 't.invest.secret-token', metadata : {'x-app-name':'node-ts-myapp'}})
+| Параметр            | Тип                       | По умолчанию                         | Значение                                                                  |
+| ------------------- | ------------------------- | ------------------------------------ | ------------------------------------------------------------------------- |
+| `token`             | `string`                  | —                                    | Токен T-Invest API                                                        |
+| `url`               | `string`                  | `https://invest-public-api.tbank.ru` | Адрес API; для песочницы `https://sandbox-invest-public-api.tbank.ru:443` |
+| `cache.instruments` | `boolean`                 | `true`                               | Кеш точечных запросов инструментов. Отключается только явным `false`      |
+| `telemetry`         | `'enabled' \| 'disabled'` | `'enabled'`                          | Диагностика stream-соединений. Любое другое значение — `TypeError`        |
+| `metadata`          | `Record<string, string>`  | —                                    | Добавляются к каждому вызову; per-call метаданные их перекрывают          |
 
-async function allInstruments() {
-    const shares = await client.instruments.shares({})
-    const bonds = await client.instruments.bonds({})
-    const etfs = await client.instruments.etfs({})
-    return {shares, bonds, etfs}
-}
+Клиент всегда проставляет `Authorization: Bearer <token>` и
+`x-app-name: t-invest-js-web-sdk`, перезаписывая одноимённые ключи.
 
-allInstruments()
-    .catch(console.log)
+## Сервисы
 
-```
+`instruments`, `marketdata`, `marketdataStream`, `operations`,
+`operationsStream`, `orders`, `ordersStream`, `stopOrders`, `users`, `sandbox`.
+
+## Кеш инструментов
+
+Кешируются только точечные запросы (`GetInstrumentBy`, `ShareBy`, `BondBy` и
+подобные) при поиске по `figi`, `ticker`, `uid`, `position_uid` или `id`. TTL —
+30 минут, хранилище in-memory. Списочные запросы вроде `shares` не кешируются.
 
 ## ErrorHub
 
-ErrorHub помогает разработчикам SDK находить и исправлять сбои stream-соединений. Диагностика
-включена по умолчанию (`telemetry: "enabled"`); при `telemetry: "disabled"` она отключается
-и библиотека ErrorHub не загружается.
+Диагностика сбоев stream-соединений включена по умолчанию
+(`telemetry: "enabled"`). При `telemetry: "disabled"` она отключается, и
+библиотека ErrorHub в бандл не подгружается.
 
-## Примеры
+## Пример
 
-Подробные примеры использования смотри в `./examples`.
+Vue 3 UI на gRPC-Web:
+[`examples/grpc-web-example`](https://opensource.tbank.ru/invest/invest-js/-/tree/main/examples/grpc-web-example).
